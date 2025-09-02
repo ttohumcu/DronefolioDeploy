@@ -1,0 +1,5 @@
+{
+  "name": "DroneFolio",
+  "description": "A modern, sleek portfolio website for drone photography and videography. Admins can log in to upload and manage photos (standard, 180°, 360°) and YouTube video links, which are beautifully displayed in a portfolio with location tags and a full-screen viewer.",
+  "requestFramePermissions": []
+}
