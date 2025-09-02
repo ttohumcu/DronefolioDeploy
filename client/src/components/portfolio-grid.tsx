@@ -180,7 +180,9 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                       
                       <div className="absolute bottom-4 left-4 right-4">
                         <h3 className="text-white font-semibold text-lg mb-1 leading-tight">{item.title}</h3>
-                        <p className="text-white/90 font-medium text-sm">{item.location}</p>
+                        {item.mediaType !== MediaType.VIDEO && item.location && (
+                          <p className="text-white/90 font-medium text-sm">{item.location}</p>
+                        )}
                       </div>
                       
                       {item.mediaType === MediaType.VIDEO && (

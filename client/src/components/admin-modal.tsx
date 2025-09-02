@@ -31,7 +31,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     if (editingItem) {
       setFormData({
         title: editingItem.title,
-        location: editingItem.location,
+        location: editingItem.location || "",
         mediaType: editingItem.mediaType,
         url: editingItem.url,
         thumbnailUrl: editingItem.thumbnailUrl || ""
@@ -73,8 +73,8 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
   });
 
   // Load settings data when modal opens
-  useState(() => {
-    if (settings) {
+  useEffect(() => {
+    if (settings && Array.isArray(settings)) {
       const settingsMap = settings.reduce((acc: any, setting: any) => {
         acc[setting.key] = setting.value;
         return acc;
@@ -88,7 +88,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
         personalUrl: settingsMap.personal_url || ""
       });
     }
-  });
+  }, [settings]);
 
   const saveMediaMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -169,10 +169,18 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.location || !formData.url) {
+    // For videos, location is not required
+    const isVideo = formData.mediaType === MediaType.VIDEO;
+    const missingFields = [];
+    
+    if (!formData.title) missingFields.push("title");
+    if (!isVideo && !formData.location) missingFields.push("location");
+    if (!formData.url) missingFields.push("URL");
+    
+    if (missingFields.length > 0) {
       toast({
         title: "Error",
-        description: "Please fill in all fields.",
+        description: `Please fill in: ${missingFields.join(", ")}`,
         variant: "destructive"
       });
       return;
@@ -432,17 +440,19 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
                   />
                 </div>
 
-                <div>
-                  <Label className="block text-sm font-medium text-foreground mb-2">Location</Label>
-                  <Input
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    placeholder="Enter location"
-                    className="w-full bg-input border border-border text-foreground"
-                    data-testid="input-location"
-                  />
-                </div>
+                {formData.mediaType !== MediaType.VIDEO && (
+                  <div>
+                    <Label className="block text-sm font-medium text-foreground mb-2">Location</Label>
+                    <Input
+                      type="text"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      placeholder="Enter location"
+                      className="w-full bg-input border border-border text-foreground"
+                      data-testid="input-location"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <Label className="block text-sm font-medium text-foreground mb-2">Media Type</Label>
