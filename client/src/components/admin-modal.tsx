@@ -263,11 +263,17 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
 
   const handleAIAnalysis = async () => {
     if (formData.mediaType === MediaType.VIDEO) {
-      toast({
-        title: "Not Supported",
-        description: "AI analysis is only available for photos, not videos.",
-        variant: "destructive"
-      });
+      // For videos, we analyze the YouTube URL directly
+      if (!formData.url) {
+        toast({
+          title: "No Video URL",
+          description: "Please enter a YouTube URL first.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      analyzePhotoMutation.mutate(formData.url);
       return;
     }
 
@@ -455,21 +461,19 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                   )}
                 </div>
 
-                {formData.mediaType !== MediaType.VIDEO && (
-                  <Button 
-                    type="button"
-                    onClick={handleAIAnalysis}
-                    disabled={analyzePhotoMutation.isPending || uploadFileMutation.isPending || (!formData.url && !selectedFile)}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 transition-all duration-200"
-                    data-testid="button-ai-analyze"
-                  >
-                    {(analyzePhotoMutation.isPending || uploadFileMutation.isPending) ? (
-                      "✨ Analyzing Photo..."
-                    ) : (
-                      "✨ Ask AI for Title & Location"
-                    )}
-                  </Button>
-                )}
+                <Button 
+                  type="button"
+                  onClick={handleAIAnalysis}
+                  disabled={analyzePhotoMutation.isPending || uploadFileMutation.isPending || (!formData.url && !selectedFile)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 transition-all duration-200"
+                  data-testid="button-ai-analyze"
+                >
+                  {(analyzePhotoMutation.isPending || uploadFileMutation.isPending) ? (
+                    formData.mediaType === MediaType.VIDEO ? "✨ Analyzing Video..." : "✨ Analyzing Photo..."
+                  ) : (
+                    "✨ Ask AI for Title & Location"
+                  )}
+                </Button>
 
                 <Button 
                   type="submit" 

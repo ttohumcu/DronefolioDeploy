@@ -254,13 +254,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI analysis endpoint for photo title and location
+  // AI analysis endpoint for photo and video title and location
   app.post("/api/ai/analyze-photo", async (req, res) => {
     try {
       const { imageUrl } = req.body;
       
       if (!imageUrl) {
-        return res.status(400).json({ error: "Image URL is required" });
+        return res.status(400).json({ error: "URL is required" });
       }
 
       if (!process.env.GEMINI_API_KEY) {
@@ -270,6 +270,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+      // Check if it's a YouTube URL (video analysis)
+      const isYouTubeUrl = imageUrl.includes('youtube.com') || imageUrl.includes('youtu.be');
+      
+      if (isYouTubeUrl) {
+        // Video analysis - analyze YouTube video metadata
+        const prompt = `Analyze this YouTube video URL "${imageUrl}" and provide:
+1. A creative title that captures the essence of the drone video content (keep it under 50 characters)
+2. The location in EXACTLY "City, Country" format - DO NOT add any description, explanation, or additional text
+
+IMPORTANT: For location, respond with MAXIMUM 2-3 words like "Wrocław, Poland" or "Paris, France" or "Rural Countryside". NO other text allowed.
+
+Respond in JSON format:
+{
+  "title": "Your creative title here", 
+  "location": "City, Country"
+}
+
+Examples of CORRECT location format:
+- "Wrocław, Poland"
+- "Tokyo, Japan" 
+- "New York, USA"
+- "Rural Countryside"
+- "Coastal Area"
+
+Examples of WRONG location format (DO NOT DO THIS):
+- "This drone shot depicts Wrocław, Poland with..."
+- "The video shows the city of..."
+- Any sentence or description
+
+If you cannot determine the location from the URL, use "Unknown Location"`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        
+        try {
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) {
+            throw new Error("No JSON found in response");
+          }
+          
+          const analysisResult = JSON.parse(jsonMatch[0]);
+          res.json(analysisResult);
+        } catch (parseError) {
+          console.error("Error parsing AI response:", parseError);
+          console.error("AI response text:", text);
+          res.status(500).json({ error: "Could not parse AI response" });
+        }
+        
+        return;
+      }
+
+      // Image analysis (existing functionality)
       // Convert relative URL to full URL if needed
       let fullImageUrl = imageUrl;
       if (imageUrl.startsWith('/public-objects/')) {
