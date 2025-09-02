@@ -108,13 +108,13 @@ export default function Portfolio() {
           <div className="mt-12 text-sm text-white/70">
             © 2025 DroneFolio
             <span 
-              className="cursor-pointer hover:text-white transition-colors"
               onClick={() => setLoginModalOpen(true)}
               data-testid="admin-access-dot"
               style={{ 
                 textShadow: 'none !important',
                 boxShadow: 'none !important',
-                filter: 'none !important'
+                filter: 'none !important',
+                cursor: 'default'
               }}
             >
               .
