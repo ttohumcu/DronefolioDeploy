@@ -173,10 +173,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug endpoint to check admin user
+  app.get("/api/debug/users", async (req, res) => {
+    try {
+      const user = await storage.getUserByUsername("admin");
+      res.json({ user });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get user" });
+    }
+  });
+
   // Update user password
   app.put("/api/user/password", async (req, res) => {
     try {
       const { currentPassword, newPassword } = req.body;
+      console.log("Password change request:", { currentPassword: "***", newPassword: "***" });
       
       if (!currentPassword || !newPassword) {
         return res.status(400).json({ error: "Current password and new password are required" });
@@ -192,7 +203,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify current password by getting the user
       const user = await storage.getUserByUsername(username);
+      console.log("Found user:", user ? { username: user.username, password: "***" } : "No user found");
+      
       if (!user || user.password !== currentPassword) {
+        console.log("Password mismatch. Expected:", user?.password, "Got:", currentPassword);
         return res.status(401).json({ error: "Current password is incorrect" });
       }
 
