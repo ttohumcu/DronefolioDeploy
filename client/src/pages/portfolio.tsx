@@ -6,6 +6,7 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 import { AdminModal } from "@/components/admin-modal";
 import { FullscreenViewer } from "@/components/fullscreen-viewer";
 import { LoginModal } from "@/components/login-modal";
+import { Twitter, Youtube, User } from "lucide-react";
 import type { MediaItem, Setting } from "@shared/schema";
 
 export default function Portfolio() {
@@ -99,28 +100,28 @@ export default function Portfolio() {
               href={twitterUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-white hover:text-primary transition-colors text-2xl"
+              className="text-white hover:text-primary transition-colors p-3 rounded-full hover:bg-white/10"
               data-testid="link-twitter"
             >
-              <i className="fab fa-twitter"></i>
+              <Twitter size={32} />
             </a>
             <a 
               href={youtubeUrl}
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-white hover:text-primary transition-colors text-2xl"
+              className="text-white hover:text-primary transition-colors p-3 rounded-full hover:bg-white/10"
               data-testid="link-youtube"
             >
-              <i className="fab fa-youtube"></i>
+              <Youtube size={32} />
             </a>
             <a 
               href={personalUrl}
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-white hover:text-primary transition-colors text-2xl"
+              className="text-white hover:text-primary transition-colors p-3 rounded-full hover:bg-white/10"
               data-testid="link-personal"
             >
-              <i className="fas fa-user"></i>
+              <User size={32} />
             </a>
           </div>
           
