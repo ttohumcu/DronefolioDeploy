@@ -6,7 +6,8 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 import { AdminModal } from "@/components/admin-modal";
 import { FullscreenViewer } from "@/components/fullscreen-viewer";
 import { LoginModal } from "@/components/login-modal";
-import { X, Youtube, User } from "lucide-react";
+import { Youtube, User } from "lucide-react";
+import { SiX } from "react-icons/si";
 import type { MediaItem, Setting } from "@shared/schema";
 
 export default function Portfolio() {
@@ -109,7 +110,7 @@ export default function Portfolio() {
               className="text-white hover:text-primary transition-colors p-3 rounded-full hover:bg-white/10"
               data-testid="link-twitter"
             >
-              <X size={32} />
+              <SiX size={32} />
             </a>
             <a 
               href={youtubeUrl}
