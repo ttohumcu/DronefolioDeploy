@@ -215,6 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify current password by getting the user
       const user = await storage.getUserByUsername(username);
+      console.log("Password change attempt - stored password:", user?.password, "provided password:", currentPassword);
       
       if (!user || user.password !== currentPassword) {
         return res.status(401).json({ error: "Current password is incorrect" });
