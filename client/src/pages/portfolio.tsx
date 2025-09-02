@@ -111,7 +111,11 @@ export default function Portfolio() {
               className="cursor-pointer hover:text-white transition-colors"
               onClick={() => setLoginModalOpen(true)}
               data-testid="admin-access-dot"
-              style={{ textShadow: 'none' }}
+              style={{ 
+                textShadow: 'none !important',
+                boxShadow: 'none !important',
+                filter: 'none !important'
+              }}
             >
               .
             </span>
