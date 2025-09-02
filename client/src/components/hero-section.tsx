@@ -38,27 +38,30 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
         />
       </div>
       
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-        {!hasPortfolioItems ? (
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border mb-6">
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              Your Portfolio Awaits
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Login as an admin to upload your first shot.
-            </p>
-          </div>
-        ) : (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">
-              Explore the Portfolio
-            </h2>
-          </div>
-        )}
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8">
+        {/* Title Section - Centered */}
+        <div className="text-center max-w-2xl mx-auto mb-6">
+          {!hasPortfolioItems ? (
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border">
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                Your Portfolio Awaits
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Login as an admin to upload your first shot.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">
+                Explore the Portfolio
+              </h2>
+            </div>
+          )}
+        </div>
         
-        {/* Filter Controls and Search Bar */}
+        {/* Filter Controls and Search Bar - Full Width */}
         {mediaItems.length > 0 ? (
-          <div className="flex items-center justify-between gap-4 w-full max-w-6xl mx-auto">
+          <div className="flex items-center gap-4 w-full">
             {/* Left side - Filter Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
               {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
