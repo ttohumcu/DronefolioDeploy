@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertMediaItemSchema, insertSettingSchema, MediaType } from "@shared/schema";
 import { z } from "zod";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -135,6 +136,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error searching media items:", error);
       res.status(500).json({ error: "Failed to search media items" });
+    }
+  });
+
+  // AI analysis endpoint for photo title and location
+  app.post("/api/ai/analyze-photo", async (req, res) => {
+    try {
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl) {
+        return res.status(400).json({ error: "Image URL is required" });
+      }
+
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ error: "Gemini API key not configured" });
+      }
+
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      // Fetch the image
+      const imageResponse = await fetch(imageUrl);
+      if (!imageResponse.ok) {
+        return res.status(400).json({ error: "Could not fetch image from URL" });
+      }
+
+      const imageBuffer = await imageResponse.arrayBuffer();
+      const imageBase64 = Buffer.from(imageBuffer).toString('base64');
+      const mimeType = imageResponse.headers.get('content-type') || 'image/jpeg';
+
+      const prompt = `Analyze this drone photography image and provide:
+1. A creative title that captures the essence of the shot (keep it under 50 characters)
+2. The likely location or type of location shown (be specific if recognizable landmarks are visible, otherwise describe the general area type)
+
+Please respond in JSON format like this:
+{
+  "title": "Your creative title here",
+  "location": "Specific location or area description"
+}
+
+Focus on what makes this aerial perspective unique and interesting. For titles, consider the composition, lighting, subject matter, and mood. For locations, be as specific as possible based on visible landmarks, geography, or architectural features.`;
+
+      const result = await model.generateContent([
+        {
+          inlineData: {
+            data: imageBase64,
+            mimeType: mimeType,
+          },
+        },
+        prompt,
+      ]);
+
+      const response = await result.response;
+      const text = response.text();
+      
+      try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+          throw new Error("No JSON found in response");
+        }
+        
+        const analysisResult = JSON.parse(jsonMatch[0]);
+        res.json(analysisResult);
+      } catch (parseError) {
+        console.error("Error parsing AI response:", parseError);
+        console.error("AI response text:", text);
+        res.status(500).json({ error: "Could not parse AI response" });
+      }
+    } catch (error) {
+      console.error("Error analyzing photo with AI:", error);
+      res.status(500).json({ error: "Failed to analyze photo" });
     }
   });
 

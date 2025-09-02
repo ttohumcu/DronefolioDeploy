@@ -24,6 +24,8 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     url: ""
   });
 
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
   const [settingsData, setSettingsData] = useState({
     heroImageUrl: "",
     footerImageUrl: "",
@@ -118,6 +120,54 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     updateSettingMutation.mutate({ key, value });
   };
 
+  const analyzePhotoMutation = useMutation({
+    mutationFn: async (imageUrl: string) => {
+      const response = await apiRequest("POST", "/api/ai/analyze-photo", { imageUrl });
+      return response;
+    },
+    onSuccess: (data) => {
+      setFormData(prev => ({
+        ...prev,
+        title: data.title || "",
+        location: data.location || ""
+      }));
+      toast({
+        title: "AI Analysis Complete",
+        description: "Title and location have been generated from your photo!"
+      });
+    },
+    onError: (error) => {
+      console.error("AI analysis error:", error);
+      toast({
+        title: "AI Analysis Failed",
+        description: "Could not analyze the photo. Please enter title and location manually.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleAIAnalysis = () => {
+    if (!formData.url) {
+      toast({
+        title: "No Image URL",
+        description: "Please enter an image URL first before using AI analysis.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (formData.mediaType === MediaType.VIDEO) {
+      toast({
+        title: "Not Supported",
+        description: "AI analysis is only available for photos, not videos.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    analyzePhotoMutation.mutate(formData.url);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="modal-backdrop max-w-2xl max-h-[90vh] overflow-hidden bg-card border border-border">
@@ -190,6 +240,22 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                     data-testid="input-url"
                   />
                 </div>
+
+                {formData.mediaType !== MediaType.VIDEO && (
+                  <Button 
+                    type="button"
+                    onClick={handleAIAnalysis}
+                    disabled={analyzePhotoMutation.isPending || !formData.url}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 transition-all duration-200"
+                    data-testid="button-ai-analyze"
+                  >
+                    {analyzePhotoMutation.isPending ? (
+                      "✨ Analyzing Photo..."
+                    ) : (
+                      "✨ Ask AI for Title & Location"
+                    )}
+                  </Button>
+                )}
 
                 <Button 
                   type="submit" 
