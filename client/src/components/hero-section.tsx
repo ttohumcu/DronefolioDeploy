@@ -26,10 +26,10 @@ export function HeroSection() {
       </div>
       
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-foreground mb-6">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground mb-6">
           DroneFolio
         </h1>
-        <p className="text-xl sm:text-2xl text-muted-foreground mb-12 font-light">
+        <p className="text-lg sm:text-xl text-muted-foreground mb-12 font-light">
           Aerial Photography & Videography
         </p>
         
