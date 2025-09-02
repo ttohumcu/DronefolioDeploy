@@ -69,7 +69,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
                   className={`text-xs ${
                     activeFilter === filter
                       ? 'bg-primary text-primary-foreground'
-                      : 'bg-white/80 text-foreground hover:bg-white/90'
+                      : 'bg-white/80 text-black hover:bg-white/90'
                   }`}
                   data-testid={`button-filter-${filter.toLowerCase().replace(/[°\s]/g, '')}`}
                 >
@@ -88,16 +88,16 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
                 placeholder="Search by Title or Location"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-foreground placeholder-muted-foreground text-base"
+                className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-black placeholder-gray-500 text-base"
                 data-testid="input-search"
               />
-              <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+              <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
             </div>
             
             {/* Right side - Location Filter */}
             <div>
               <Select value={locationFilter} onValueChange={setLocationFilter}>
-                <SelectTrigger className="w-40 bg-white/80 text-foreground rounded-xl border border-white/20">
+                <SelectTrigger className="w-40 bg-white/80 text-black rounded-xl border border-white/20">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -116,10 +116,10 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
               placeholder="Search by Title or Location"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-foreground placeholder-muted-foreground text-base"
+              className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-black placeholder-gray-500 text-base"
               data-testid="input-search"
             />
-            <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+            <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
           </div>
         )}
       </div>
