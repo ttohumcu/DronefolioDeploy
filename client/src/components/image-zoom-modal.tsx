@@ -12,29 +12,52 @@ interface ImageZoomModalProps {
 
 export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomModalProps) {
   const [zoom, setZoom] = useState(1);
+  const [baseZoom, setBaseZoom] = useState(1); // The "fit to screen" zoom level
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, posX: 0, posY: 0 });
   const imageRef = useRef<HTMLImageElement>(null);
 
+  // Calculate fit-to-screen zoom when image loads
+  const calculateFitZoom = () => {
+    if (!imageRef.current) return 1;
+    
+    const img = imageRef.current;
+    const container = img.parentElement;
+    if (!container) return 1;
+    
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    const imageWidth = img.naturalWidth;
+    const imageHeight = img.naturalHeight;
+    
+    // Calculate zoom to fit entire image in viewport
+    const scaleX = containerWidth / imageWidth;
+    const scaleY = containerHeight / imageHeight;
+    const fitZoom = Math.min(scaleX, scaleY, 1); // Don't zoom larger than 100% initially
+    
+    return fitZoom;
+  };
+
   // Reset zoom and position when modal opens
   useEffect(() => {
     if (isOpen) {
       setZoom(1);
+      setBaseZoom(1);
       setPosition({ x: 0, y: 0 });
     }
   }, [isOpen]);
 
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(prev * 1.5, 5));
+    setZoom(prev => Math.min(prev * 1.5, baseZoom * 5));
   };
 
   const handleZoomOut = () => {
-    setZoom(prev => Math.max(prev / 1.5, 0.5));
+    setZoom(prev => Math.max(prev / 1.5, baseZoom * 0.2));
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (zoom > 1) {
+    if (zoom > baseZoom) {
       setDragging(true);
       setDragStart({
         x: e.clientX,
@@ -46,7 +69,7 @@ export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomMo
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (dragging && zoom > 1) {
+    if (dragging && zoom > baseZoom) {
       const deltaX = e.clientX - dragStart.x;
       const deltaY = e.clientY - dragStart.y;
       setPosition({
@@ -117,7 +140,7 @@ export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomMo
             <ZoomIn className="h-5 w-5" />
           </Button>
           <div className="bg-black/50 text-white px-3 py-2 rounded text-sm">
-            {Math.round(zoom * 100)}%
+            {Math.round((zoom / baseZoom) * 100)}%
           </div>
         </div>
 
@@ -131,11 +154,14 @@ export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomMo
             style={{
               transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
               transformOrigin: 'center center',
-              cursor: zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'default'
+              cursor: zoom > baseZoom ? (dragging ? 'grabbing' : 'grab') : 'default'
             }}
             onMouseDown={handleMouseDown}
             onLoad={() => {
-              // Reset position when image loads
+              // Calculate and set fit-to-screen zoom when image loads
+              const fitZoom = calculateFitZoom();
+              setBaseZoom(fitZoom);
+              setZoom(fitZoom);
               setPosition({ x: 0, y: 0 });
             }}
             draggable={false}
