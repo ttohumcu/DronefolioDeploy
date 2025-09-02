@@ -243,11 +243,11 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
         return;
       }
       
-      // Validate file size (10MB max)
-      if (file.size > 10 * 1024 * 1024) {
+      // Validate file size (100MB max)
+      if (file.size > 100 * 1024 * 1024) {
         toast({
           title: "File Too Large", 
-          description: "Please select an image smaller than 10MB",
+          description: "Please select an image smaller than 100MB",
           variant: "destructive"
         });
         return;
