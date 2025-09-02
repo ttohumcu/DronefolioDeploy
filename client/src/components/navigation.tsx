@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import droneIcon from "@assets/generated_images/Modern_drone_icon_silhouette_e04e9b81.png";
+import droneIcon from "@assets/image_1756781072901.png";
 
 interface NavigationProps {
   onOpenAdmin: () => void;
