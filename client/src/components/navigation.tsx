@@ -9,7 +9,7 @@ interface NavigationProps {
 
 export function Navigation({ onOpenAdmin, onLogout, showAdminButtons = false }: NavigationProps) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
@@ -17,9 +17,9 @@ export function Navigation({ onOpenAdmin, onLogout, showAdminButtons = false }: 
               <img src={droneIcon} alt="Drone" className="w-10 h-10 filter invert" />
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xl font-bold text-foreground">DroneFolio</span>
+                  <span className="text-xl font-bold text-white drop-shadow-lg">DroneFolio</span>
                 </div>
-                <span className="text-xs text-muted-foreground">Aerial Photography & Videography</span>
+                <span className="text-xs text-white/90 drop-shadow-lg">Aerial Photography & Videography</span>
               </div>
               <img src={droneIcon} alt="Drone" className="w-10 h-10 filter invert" />
             </div>
