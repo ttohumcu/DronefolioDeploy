@@ -198,48 +198,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Update user password
   app.put("/api/user/password", async (req, res) => {
-    console.log("=== PASSWORD CHANGE REQUEST ===");
-    console.log("Request body:", req.body);
-    
     try {
       const { currentPassword, newPassword } = req.body;
-      console.log("Extracted passwords - current exists:", !!currentPassword, "new exists:", !!newPassword);
       
       if (!currentPassword || !newPassword) {
-        console.log("Missing password fields");
         return res.status(400).json({ error: "Current password and new password are required" });
       }
 
       if (newPassword.length < 8) {
-        console.log("New password too short");
         return res.status(400).json({ error: "New password must be at least 8 characters long" });
       }
 
       // For now, we'll use a hardcoded username "admin" since authentication isn't implemented
       // In the future, this would be extracted from the authenticated session
       const username = "admin";
-      console.log("Looking up user:", username);
       
       // Verify current password by getting the user
       const user = await storage.getUserByUsername(username);
-      console.log("Found user:", !!user);
-      console.log("Stored password:", user?.password);
-      console.log("Provided password:", currentPassword);
-      console.log("Passwords match:", user?.password === currentPassword);
       
       if (!user || user.password !== currentPassword) {
-        console.log("Password verification failed");
         return res.status(401).json({ error: "Current password is incorrect" });
       }
 
-      console.log("Password verification successful, updating...");
       // Update the password
       const success = await storage.updatePassword(username, newPassword);
       if (success) {
-        console.log("Password update successful");
         res.json({ message: "Password updated successfully" });
       } else {
-        console.log("Password update failed");
         res.status(500).json({ error: "Failed to update password" });
       }
     } catch (error) {
