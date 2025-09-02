@@ -67,16 +67,8 @@ export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         
-        {/* Header */}
+        {/* Search Bar */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl sm:text-6xl font-black text-foreground mb-6">
-            DroneFolio
-          </h1>
-          <p className="text-xl text-muted-foreground mb-12">
-            Aerial Photography & Videography
-          </p>
-          
-          {/* Search Bar */}
           <div className="max-w-lg mx-auto mb-12">
             <div className="relative">
               <Input
