@@ -26,9 +26,11 @@ export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
 
   // Filter media items
   const filteredItems = mediaItems.filter((item: MediaItem) => {
-    const matchesSearch = !searchQuery || 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchQuery.toLowerCase());
+    // Handle search - match any partial text in title or location
+    const query = searchQuery.trim().toLowerCase();
+    const matchesSearch = !query || 
+      (item.title || '').toLowerCase().includes(query) ||
+      (item.location || '').toLowerCase().includes(query);
     
     const matchesType = activeFilter === "All" || item.mediaType === activeFilter;
     
