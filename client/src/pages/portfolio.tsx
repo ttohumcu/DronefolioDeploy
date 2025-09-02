@@ -5,11 +5,13 @@ import { HeroSection } from "@/components/hero-section";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { AdminModal } from "@/components/admin-modal";
 import { FullscreenViewer } from "@/components/fullscreen-viewer";
+import { LoginModal } from "@/components/login-modal";
 import type { MediaItem } from "@shared/schema";
 
 export default function Portfolio() {
   const [adminModalOpen, setAdminModalOpen] = useState(false);
-  const [showAdminButtons, setShowAdminButtons] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [viewerState, setViewerState] = useState<{
     isOpen: boolean;
     mediaItem: MediaItem | null;
@@ -47,7 +49,8 @@ export default function Portfolio() {
     <div className="min-h-screen bg-background text-foreground">
       <Navigation 
         onOpenAdmin={() => setAdminModalOpen(true)} 
-        showAdminButtons={showAdminButtons}
+        onLogout={() => setIsAuthenticated(false)}
+        showAdminButtons={isAuthenticated}
       />
       
       {showHero ? (
@@ -106,7 +109,7 @@ export default function Portfolio() {
             © 2025 DroneFolio
             <span 
               className="cursor-pointer hover:text-white transition-colors"
-              onClick={() => setShowAdminButtons(!showAdminButtons)}
+              onClick={() => setLoginModalOpen(true)}
               data-testid="admin-access-dot"
             >
               .
@@ -125,6 +128,12 @@ export default function Portfolio() {
         isOpen={viewerState.isOpen}
         mediaItem={viewerState.mediaItem}
         onClose={handleCloseViewer}
+      />
+
+      <LoginModal 
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLoginSuccess={() => setIsAuthenticated(true)}
       />
     </div>
   );
