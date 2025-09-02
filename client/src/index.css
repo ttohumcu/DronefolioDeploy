@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(210, 40%, 8%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(210, 40%, 12%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(210, 40%, 15%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: hsl(217, 78%, 58%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(210, 40%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(210, 40%, 16%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(217, 78%, 58%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62%, 52%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(210, 40%, 24%);
+  --input: hsl(210, 40%, 16%);
+  --ring: hsl(217, 78%, 58%);
+  --radius: 0.5rem;
+  --font-sans: 'Inter', sans-serif;
+}
+
+.dark {
+  --background: hsl(210, 40%, 8%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(210, 40%, 12%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(210, 40%, 15%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: hsl(217, 78%, 58%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(210, 40%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(210, 40%, 16%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(217, 78%, 58%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62%, 52%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(210, 40%, 24%);
+  --input: hsl(210, 40%, 16%);
+  --ring: hsl(217, 78%, 58%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(210, 40%, 8%) 0%, hsl(217, 32%, 17%) 100%);
+  }
+  
+  .media-card {
+    transition: all 0.3s ease;
+  }
+  
+  .media-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .filter-btn {
+    transition: all 0.2s ease;
+  }
+  
+  .filter-btn.active {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .modal-backdrop {
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .tab-btn {
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .tab-btn.active {
+    color: hsl(var(--primary));
+    border-bottom-color: hsl(var(--primary));
+  }
+}
