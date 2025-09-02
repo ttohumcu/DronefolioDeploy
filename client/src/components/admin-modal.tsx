@@ -170,39 +170,27 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
       return;
     }
 
-    // If there's a selected file but no URL, upload it first
-    if (selectedFile && !formData.url) {
-      try {
-        const uploadResult = await uploadFileMutation.mutateAsync(selectedFile);
-        // Convert relative URL to full URL for AI analysis
-        const fullUrl = `${window.location.origin}${uploadResult.url}`;
-        analyzePhotoMutation.mutate(fullUrl);
-      } catch (error) {
-        toast({
-          title: "Upload Failed",
-          description: "Could not upload the image for AI analysis.",
-          variant: "destructive"
-        });
-      }
-      return;
-    }
-
-    if (!formData.url) {
+    if (!selectedFile) {
       toast({
-        title: "No Image",
-        description: "Please select an image file or enter an image URL first.",
+        title: "No Image Selected",
+        description: "Please select an image file first.",
         variant: "destructive"
       });
       return;
     }
 
-    // Convert relative URL to full URL if needed
-    let urlToAnalyze = formData.url;
-    if (formData.url.startsWith('/public-objects/')) {
-      urlToAnalyze = `${window.location.origin}${formData.url}`;
+    try {
+      const uploadResult = await uploadFileMutation.mutateAsync(selectedFile);
+      // Convert relative URL to full URL for AI analysis
+      const fullUrl = `${window.location.origin}${uploadResult.url}`;
+      analyzePhotoMutation.mutate(fullUrl);
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Could not upload the image for AI analysis.",
+        variant: "destructive"
+      });
     }
-
-    analyzePhotoMutation.mutate(urlToAnalyze);
   };
 
   const uploadFileMutation = useMutation({
@@ -349,42 +337,19 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                       data-testid="input-url"
                     />
                   ) : (
-                    <div className="space-y-4">
-                      {/* File Upload Option */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-medium">Upload from Device</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileSelect}
-                            className="flex-1 text-sm file:mr-2 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer"
-                            data-testid="input-file"
-                          />
-                        </div>
-                        {selectedFile && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                          </p>
-                        )}
-                      </div>
-                      
-                      {/* URL Option */}
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm font-medium">Or Enter URL</span>
-                        </div>
-                        <Input
-                          type="url"
-                          value={formData.url}
-                          onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                          placeholder="https://images.unsplash.com/..."
-                          className="w-full bg-input border border-border text-foreground"
-                          data-testid="input-url"
-                        />
-                      </div>
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="w-full text-sm file:mr-2 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer"
+                        data-testid="input-file"
+                      />
+                      {selectedFile && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

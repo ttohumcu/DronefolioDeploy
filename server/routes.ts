@@ -229,15 +229,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const prompt = `Analyze this drone photography image and provide:
 1. A creative title that captures the essence of the shot (keep it under 50 characters)
-2. The location in "City, Country" format only (if recognizable landmarks are visible, otherwise use general area type like "Rural Countryside" or "Coastal Area")
+2. The location in EXACTLY "City, Country" format - DO NOT add any description, explanation, or additional text
 
-Please respond in JSON format like this:
+IMPORTANT: For location, respond with MAXIMUM 2-3 words like "Wrocław, Poland" or "Paris, France" or "Rural Countryside". NO other text allowed.
+
+Respond in JSON format:
 {
-  "title": "Your creative title here",
+  "title": "Your creative title here", 
   "location": "City, Country"
 }
 
-Focus on what makes this aerial perspective unique and interesting. For titles, consider the composition, lighting, subject matter, and mood. For locations, provide ONLY the city and country name, nothing else - for example "Wrocław, Poland" or "Paris, France".`;
+Examples of CORRECT location format:
+- "Wrocław, Poland"
+- "Tokyo, Japan" 
+- "New York, USA"
+- "Rural Countryside"
+- "Coastal Area"
+
+Examples of WRONG location format (DO NOT DO THIS):
+- "This drone shot depicts Wrocław, Poland with..."
+- "The image shows the city of..."
+- Any sentence or description`;
 
       const result = await model.generateContent([
         {
