@@ -209,8 +209,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+      // Convert relative URL to full URL if needed
+      let fullImageUrl = imageUrl;
+      if (imageUrl.startsWith('/public-objects/')) {
+        const protocol = req.headers['x-forwarded-proto'] || 'http';
+        const host = req.headers.host || 'localhost:5000';
+        fullImageUrl = `${protocol}://${host}${imageUrl}`;
+      }
+
       // Fetch the image
-      const imageResponse = await fetch(imageUrl);
+      const imageResponse = await fetch(fullImageUrl);
       if (!imageResponse.ok) {
         return res.status(400).json({ error: "Could not fetch image from URL" });
       }

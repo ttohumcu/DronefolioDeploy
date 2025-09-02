@@ -148,16 +148,7 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     }
   });
 
-  const handleAIAnalysis = () => {
-    if (!formData.url) {
-      toast({
-        title: "No Image URL",
-        description: "Please enter an image URL first before using AI analysis.",
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handleAIAnalysis = async () => {
     if (formData.mediaType === MediaType.VIDEO) {
       toast({
         title: "Not Supported",
@@ -167,7 +158,39 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
       return;
     }
 
-    analyzePhotoMutation.mutate(formData.url);
+    // If there's a selected file but no URL, upload it first
+    if (selectedFile && !formData.url) {
+      try {
+        const uploadResult = await uploadFileMutation.mutateAsync(selectedFile);
+        // Convert relative URL to full URL for AI analysis
+        const fullUrl = `${window.location.origin}${uploadResult.url}`;
+        analyzePhotoMutation.mutate(fullUrl);
+      } catch (error) {
+        toast({
+          title: "Upload Failed",
+          description: "Could not upload the image for AI analysis.",
+          variant: "destructive"
+        });
+      }
+      return;
+    }
+
+    if (!formData.url) {
+      toast({
+        title: "No Image",
+        description: "Please select an image file or enter an image URL first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Convert relative URL to full URL if needed
+    let urlToAnalyze = formData.url;
+    if (formData.url.startsWith('/public-objects/')) {
+      urlToAnalyze = `${window.location.origin}${formData.url}`;
+    }
+
+    analyzePhotoMutation.mutate(urlToAnalyze);
   };
 
   const uploadFileMutation = useMutation({
