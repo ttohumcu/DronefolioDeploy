@@ -14,14 +14,14 @@ export function Navigation({ onOpenAdmin, onLogout, showAdminButtons = false }: 
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-              <img src={droneIcon} alt="Drone" className="w-7 h-7 filter invert" />
+              <img src={droneIcon} alt="Drone" className="w-10 h-10 filter invert" />
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <span className="text-xl font-bold text-foreground">DroneFolio</span>
                 </div>
                 <span className="text-xs text-muted-foreground">Aerial Photography & Videography</span>
               </div>
-              <img src={droneIcon} alt="Drone" className="w-7 h-7 filter invert" />
+              <img src={droneIcon} alt="Drone" className="w-10 h-10 filter invert" />
             </div>
           </div>
           
