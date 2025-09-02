@@ -14,7 +14,10 @@ export function Navigation({ onOpenAdmin, onLogout, showAdminButtons = false }: 
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <i className="fas fa-helicopter text-primary text-xl"></i>
-              <span className="text-xl font-bold text-foreground">DroneFolio</span>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-foreground">DroneFolio</span>
+                <span className="text-xs text-muted-foreground">Aerial Photography & Videography</span>
+              </div>
             </div>
             <i className="fas fa-times text-muted-foreground cursor-pointer hover:text-foreground transition-colors"></i>
           </div>

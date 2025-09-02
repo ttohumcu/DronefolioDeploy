@@ -25,15 +25,8 @@ export function HeroSection() {
         />
       </div>
       
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground mb-6">
-          DroneFolio
-        </h1>
-        <p className="text-lg sm:text-xl text-muted-foreground mb-12 font-light">
-          Aerial Photography & Videography
-        </p>
-        
-        {!hasPortfolioItems && (
+      {!hasPortfolioItems && (
+        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
           <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 sm:p-12 border border-border">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               Your Portfolio Awaits
@@ -42,8 +35,8 @@ export function HeroSection() {
               It looks a little empty here. Login as an admin to upload your first shot.
             </p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
