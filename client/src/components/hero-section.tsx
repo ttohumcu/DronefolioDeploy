@@ -41,16 +41,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
       
       {/* Title Section - Centered */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
-        {!hasPortfolioItems ? (
-          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border mb-6">
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              Your Portfolio Awaits
-            </h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Login as an admin to upload your first shot.
-            </p>
-          </div>
-        ) : (
+        {hasPortfolioItems && (
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">
               Explore the Portfolio
