@@ -34,7 +34,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
         <img 
           src={backgroundImage}
           alt="Aerial view of city with river and bridges" 
-          className="w-full h-full object-cover opacity-20"
+          className="w-full h-full object-cover opacity-50"
         />
       </div>
       

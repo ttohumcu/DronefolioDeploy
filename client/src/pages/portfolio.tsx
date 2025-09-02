@@ -93,7 +93,7 @@ export default function Portfolio() {
             alt="Scenic aerial view of road through landscape" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-black/40"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-black/20"></div>
         </div>
         
         <div className="relative z-10 text-center">
