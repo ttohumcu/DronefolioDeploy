@@ -61,7 +61,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
         
         {/* Filter Controls and Search Bar - Full Width */}
         {mediaItems.length > 0 ? (
-          <div className="flex items-center gap-4 w-full">
+          <div className="flex items-center justify-between w-full max-w-full">
             {/* Left side - Filter Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
               {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
