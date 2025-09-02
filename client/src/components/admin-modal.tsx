@@ -124,8 +124,19 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
 
   const analyzePhotoMutation = useMutation({
     mutationFn: async (imageUrl: string) => {
-      const response = await apiRequest("POST", "/api/ai/analyze-photo", { imageUrl });
-      return response;
+      const response = await fetch("/api/ai/analyze-photo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ imageUrl }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response.json();
     },
     onSuccess: (data) => {
       console.log("AI Analysis success data:", data);
