@@ -53,9 +53,11 @@ export default function Portfolio() {
         showAdminButtons={isAuthenticated}
       />
       
-      {showHero ? (
-        <HeroSection />
-      ) : (
+      {/* Always show hero section */}
+      <HeroSection />
+      
+      {/* Show portfolio grid only when there are media items */}
+      {!showHero && (
         <PortfolioGrid onOpenViewer={handleOpenViewer} />
       )}
 

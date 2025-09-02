@@ -5,12 +5,18 @@ export function HeroSection() {
     queryKey: ["/api/settings"],
   });
 
+  const { data: mediaItems = [] } = useQuery({
+    queryKey: ["/api/media"],
+  });
+
   // Find hero image URL from settings
   const heroImageSetting = settings?.find((s: any) => s.key === 'hero_image_url');
   const backgroundImage = heroImageSetting?.value || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&h=1380';
 
+  const hasPortfolioItems = mediaItems.length > 0;
+
   return (
-    <section className="hero-gradient pt-16 min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section className={`hero-gradient pt-16 ${hasPortfolioItems ? 'min-h-[70vh]' : 'min-h-screen'} flex items-center justify-center relative overflow-hidden`}>
       <div className="absolute inset-0 z-0">
         <img 
           src={backgroundImage}
@@ -27,14 +33,16 @@ export function HeroSection() {
           Aerial Photography & Videography
         </p>
         
-        <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 sm:p-12 border border-border">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Your Portfolio Awaits
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            It looks a little empty here. Login as an admin to upload your first shot.
-          </p>
-        </div>
+        {!hasPortfolioItems && (
+          <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 sm:p-12 border border-border">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+              Your Portfolio Awaits
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8">
+              It looks a little empty here. Login as an admin to upload your first shot.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
