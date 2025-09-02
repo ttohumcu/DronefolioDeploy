@@ -382,11 +382,11 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                   <Button 
                     type="button"
                     onClick={handleAIAnalysis}
-                    disabled={analyzePhotoMutation.isPending || !formData.url}
+                    disabled={analyzePhotoMutation.isPending || uploadFileMutation.isPending || (!formData.url && !selectedFile)}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 transition-all duration-200"
                     data-testid="button-ai-analyze"
                   >
-                    {analyzePhotoMutation.isPending ? (
+                    {(analyzePhotoMutation.isPending || uploadFileMutation.isPending) ? (
                       "✨ Analyzing Photo..."
                     ) : (
                       "✨ Ask AI for Title & Location"
