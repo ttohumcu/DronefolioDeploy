@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MediaType, type MediaItem } from "@shared/schema";
+import { MediaType, type MediaItem, type Setting } from "@shared/schema";
 
 interface HeroSectionProps {
   searchQuery: string;
@@ -18,12 +18,8 @@ interface HeroSectionProps {
 export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActiveFilter, locationFilter, setLocationFilter, mediaItems }: HeroSectionProps) {
   // Get unique locations for filter dropdown
   const locations = Array.from(new Set(mediaItems.map((item: MediaItem) => item.location))).sort();
-  const { data: settings } = useQuery({
+  const { data: settings } = useQuery<Setting[]>({
     queryKey: ["/api/settings"],
-  });
-
-  const { data: mediaItems = [] } = useQuery({
-    queryKey: ["/api/media"],
   });
 
   // Find hero image URL from settings

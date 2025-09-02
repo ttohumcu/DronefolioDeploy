@@ -15,7 +15,7 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<MediaItem | null>(null);
 
-  const { data: mediaItems = [], isLoading } = useQuery({
+  const { data: mediaItems = [], isLoading } = useQuery<MediaItem[]>({
     queryKey: ["/api/media"],
   });
 

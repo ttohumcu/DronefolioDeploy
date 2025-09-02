@@ -6,7 +6,7 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 import { AdminModal } from "@/components/admin-modal";
 import { FullscreenViewer } from "@/components/fullscreen-viewer";
 import { LoginModal } from "@/components/login-modal";
-import type { MediaItem } from "@shared/schema";
+import type { MediaItem, Setting } from "@shared/schema";
 
 export default function Portfolio() {
   const [adminModalOpen, setAdminModalOpen] = useState(false);
@@ -23,11 +23,11 @@ export default function Portfolio() {
     mediaItem: null,
   });
 
-  const { data: mediaItems = [] } = useQuery({
+  const { data: mediaItems = [] } = useQuery<MediaItem[]>({
     queryKey: ["/api/media"],
   });
 
-  const { data: settings } = useQuery({
+  const { data: settings = [] } = useQuery<Setting[]>({
     queryKey: ["/api/settings"],
   });
 
