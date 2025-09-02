@@ -9,6 +9,7 @@ import type { MediaItem } from "@shared/schema";
 
 export default function Portfolio() {
   const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [showAdminButtons, setShowAdminButtons] = useState(false);
   const [viewerState, setViewerState] = useState<{
     isOpen: boolean;
     mediaItem: MediaItem | null;
@@ -44,7 +45,10 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Navigation onOpenAdmin={() => setAdminModalOpen(true)} />
+      <Navigation 
+        onOpenAdmin={() => setAdminModalOpen(true)} 
+        showAdminButtons={showAdminButtons}
+      />
       
       {showHero ? (
         <HeroSection />
@@ -99,7 +103,15 @@ export default function Portfolio() {
           </div>
           
           <div className="mt-12 text-sm text-white/70">
-            © 2025 DroneFolio. All rights reserved.
+            © 2025 DroneFolio
+            <span 
+              className="cursor-pointer hover:text-white transition-colors"
+              onClick={() => setShowAdminButtons(!showAdminButtons)}
+              data-testid="admin-access-dot"
+            >
+              .
+            </span>
+            {" "}All rights reserved.
           </div>
         </div>
       </footer>
