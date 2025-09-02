@@ -27,6 +27,8 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedHeroFile, setSelectedHeroFile] = useState<File | null>(null);
+  const [selectedFooterFile, setSelectedFooterFile] = useState<File | null>(null);
 
   const [settingsData, setSettingsData] = useState({
     heroImageUrl: "",
@@ -120,6 +122,39 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
 
   const handleUpdateSetting = (key: string, value: string) => {
     updateSettingMutation.mutate({ key, value });
+  };
+
+  const handleUploadAndUpdateSetting = async (settingKey: string, file: File | null) => {
+    if (!file) {
+      toast({
+        title: "No File Selected",
+        description: "Please select an image file first.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Upload the file first
+      const uploadResult = await uploadFileMutation.mutateAsync(file);
+      
+      // Then update the setting with the uploaded URL
+      handleUpdateSetting(settingKey, uploadResult.url);
+      
+      // Clear the selected file
+      if (settingKey === 'hero_image_url') {
+        setSelectedHeroFile(null);
+      } else if (settingKey === 'footer_image_url') {
+        setSelectedFooterFile(null);
+      }
+      
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Could not upload the background image.",
+        variant: "destructive"
+      });
+    }
   };
 
   const analyzePhotoMutation = useMutation({
@@ -385,42 +420,76 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
               <h3 className="text-xl font-semibold text-foreground mb-6">Customize Images</h3>
               
               <div>
-                <Label className="block text-sm font-medium text-foreground mb-2">Hero Background Image URL</Label>
-                <Input
-                  type="url"
-                  value={settingsData.heroImageUrl}
-                  onChange={(e) => setSettingsData({ ...settingsData, heroImageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-input border border-border text-foreground mb-4"
-                  data-testid="input-hero-image"
+                <Label className="block text-sm font-medium text-foreground mb-2">Hero Background Image</Label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 500 * 1024 * 1024) {
+                        toast({
+                          title: "File Too Large",
+                          description: "Please select an image smaller than 500MB",
+                          variant: "destructive"
+                        });
+                        return;
+                      }
+                      setSelectedHeroFile(file);
+                    }
+                  }}
+                  className="w-full text-sm file:mr-2 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer mb-4"
+                  data-testid="input-hero-file"
                 />
+                {selectedHeroFile && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Selected: {selectedHeroFile.name} ({(selectedHeroFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
                 <Button 
-                  onClick={() => handleUpdateSetting('hero_image_url', settingsData.heroImageUrl)}
+                  onClick={() => handleUploadAndUpdateSetting('hero_image_url', selectedHeroFile)}
                   className="w-full bg-muted text-muted-foreground hover:bg-muted/80"
-                  disabled={updateSettingMutation.isPending}
+                  disabled={updateSettingMutation.isPending || !selectedHeroFile}
                   data-testid="button-update-hero"
                 >
-                  Update Hero Image
+                  Upload & Update Hero Image
                 </Button>
               </div>
 
               <div>
-                <Label className="block text-sm font-medium text-foreground mb-2">Footer Background Image URL</Label>
-                <Input
-                  type="url"
-                  value={settingsData.footerImageUrl}
-                  onChange={(e) => setSettingsData({ ...settingsData, footerImageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full bg-input border border-border text-foreground mb-4"
-                  data-testid="input-footer-image"
+                <Label className="block text-sm font-medium text-foreground mb-2">Footer Background Image</Label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (file.size > 500 * 1024 * 1024) {
+                        toast({
+                          title: "File Too Large",
+                          description: "Please select an image smaller than 500MB",
+                          variant: "destructive"
+                        });
+                        return;
+                      }
+                      setSelectedFooterFile(file);
+                    }
+                  }}
+                  className="w-full text-sm file:mr-2 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer mb-4"
+                  data-testid="input-footer-file"
                 />
+                {selectedFooterFile && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Selected: {selectedFooterFile.name} ({(selectedFooterFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
                 <Button 
-                  onClick={() => handleUpdateSetting('footer_image_url', settingsData.footerImageUrl)}
+                  onClick={() => handleUploadAndUpdateSetting('footer_image_url', selectedFooterFile)}
                   className="w-full bg-muted text-muted-foreground hover:bg-muted/80"
-                  disabled={updateSettingMutation.isPending}
+                  disabled={updateSettingMutation.isPending || !selectedFooterFile}
                   data-testid="button-update-footer"
                 >
-                  Update Footer Image
+                  Upload & Update Footer Image
                 </Button>
               </div>
             </TabsContent>
