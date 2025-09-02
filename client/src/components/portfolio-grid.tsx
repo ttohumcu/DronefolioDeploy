@@ -8,10 +8,11 @@ import { ImageZoomModal } from "@/components/image-zoom-modal";
 
 interface PortfolioGridProps {
   onOpenViewer: (item: MediaItem) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
-export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery }: PortfolioGridProps) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All Locations");
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
@@ -67,23 +68,6 @@ export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         
-        {/* Search Bar */}
-        <div className="text-center mb-16">
-          <div className="max-w-lg mx-auto mb-12">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search by Title or Location"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-6 py-4 bg-input border border-border rounded-xl text-foreground placeholder-muted-foreground text-lg pr-12"
-                data-testid="input-search"
-              />
-              <i className="fas fa-search absolute right-6 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
-            </div>
-          </div>
-        </div>
-
         {/* Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">
           {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (

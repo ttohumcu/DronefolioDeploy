@@ -1,6 +1,13 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+}
+
+export function HeroSection({ searchQuery, onSearchChange }: HeroSectionProps) {
   const { data: settings } = useQuery({
     queryKey: ["/api/settings"],
   });
@@ -16,7 +23,7 @@ export function HeroSection() {
   const hasPortfolioItems = mediaItems.length > 0;
 
   return (
-    <section className={`hero-gradient pt-16 ${hasPortfolioItems ? 'min-h-[70vh]' : 'min-h-screen'} flex items-center justify-center relative overflow-hidden`}>
+    <section className="hero-gradient pt-16 h-48 flex items-center justify-center relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img 
           src={backgroundImage}
@@ -25,18 +32,37 @@ export function HeroSection() {
         />
       </div>
       
-      {!hasPortfolioItems && (
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-          <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 sm:p-12 border border-border">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
+        {!hasPortfolioItems ? (
+          <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Your Portfolio Awaits
             </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              It looks a little empty here. Login as an admin to upload your first shot.
+            <p className="text-sm text-muted-foreground mb-4">
+              Login as an admin to upload your first shot.
             </p>
           </div>
+        ) : (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">
+              Explore the Portfolio
+            </h2>
+          </div>
+        )}
+        
+        {/* Search Bar */}
+        <div className="relative">
+          <Input
+            type="text"
+            placeholder="Search by Title or Location"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-foreground placeholder-muted-foreground text-base"
+            data-testid="input-search"
+          />
+          <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
         </div>
-      )}
+      </div>
     </section>
   );
 }

@@ -12,6 +12,7 @@ export default function Portfolio() {
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [viewerState, setViewerState] = useState<{
     isOpen: boolean;
     mediaItem: MediaItem | null;
@@ -54,11 +55,11 @@ export default function Portfolio() {
       />
       
       {/* Always show hero section */}
-      <HeroSection />
+      <HeroSection searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       
       {/* Show portfolio grid only when there are media items */}
       {!showHero && (
-        <PortfolioGrid onOpenViewer={handleOpenViewer} />
+        <PortfolioGrid onOpenViewer={handleOpenViewer} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       )}
 
       {/* Footer */}
