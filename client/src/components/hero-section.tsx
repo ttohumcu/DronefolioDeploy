@@ -58,9 +58,9 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
         
         {/* Filter Controls and Search Bar */}
         {mediaItems.length > 0 ? (
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex items-center justify-between gap-4 w-full max-w-6xl mx-auto">
             {/* Left side - Filter Buttons */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
                 <Button
                   key={filter}
@@ -82,7 +82,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
             </div>
             
             {/* Center - Search Bar */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1 mx-6">
               <Input
                 type="text"
                 placeholder="Search by Title or Location"
@@ -95,7 +95,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
             </div>
             
             {/* Right side - Location Filter */}
-            <div>
+            <div className="flex-shrink-0">
               <Select value={locationFilter} onValueChange={setLocationFilter}>
                 <SelectTrigger className="w-40 bg-white/80 text-black rounded-xl border border-white/20">
                   <SelectValue />
