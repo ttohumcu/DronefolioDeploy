@@ -6,7 +6,7 @@ import { PortfolioGrid } from "@/components/portfolio-grid";
 import { AdminModal } from "@/components/admin-modal";
 import { FullscreenViewer } from "@/components/fullscreen-viewer";
 import { LoginModal } from "@/components/login-modal";
-import { Twitter, Youtube, User } from "lucide-react";
+import { X, Youtube, User } from "lucide-react";
 import type { MediaItem, Setting } from "@shared/schema";
 
 export default function Portfolio() {
@@ -109,7 +109,7 @@ export default function Portfolio() {
               className="text-white hover:text-primary transition-colors p-3 rounded-full hover:bg-white/10"
               data-testid="link-twitter"
             >
-              <Twitter size={32} />
+              <X size={32} />
             </a>
             <a 
               href={youtubeUrl}
