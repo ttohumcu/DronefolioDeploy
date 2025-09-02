@@ -173,6 +173,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user password
+  app.put("/api/user/password", async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: "Current password and new password are required" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ error: "New password must be at least 8 characters long" });
+      }
+
+      // For now, we'll use a hardcoded username "admin" since authentication isn't implemented
+      // In the future, this would be extracted from the authenticated session
+      const username = "admin";
+      
+      // Verify current password by getting the user
+      const user = await storage.getUserByUsername(username);
+      if (!user || user.password !== currentPassword) {
+        return res.status(401).json({ error: "Current password is incorrect" });
+      }
+
+      // Update the password
+      const success = await storage.updatePassword(username, newPassword);
+      if (success) {
+        res.json({ message: "Password updated successfully" });
+      } else {
+        res.status(500).json({ error: "Failed to update password" });
+      }
+    } catch (error) {
+      console.error("Error updating password:", error);
+      res.status(500).json({ error: "Failed to update password" });
+    }
+  });
+
   // Search media items
   app.get("/api/search", async (req, res) => {
     try {

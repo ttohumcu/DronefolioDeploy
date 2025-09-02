@@ -5,6 +5,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updatePassword(username: string, newPassword: string): Promise<boolean>;
   
   getMediaItems(): Promise<MediaItem[]>;
   getMediaItemsByType(type: MediaType): Promise<MediaItem[]>;
@@ -27,8 +28,9 @@ export class MemStorage implements IStorage {
     this.mediaItems = new Map();
     this.settings = new Map();
     
-    // Initialize default settings
+    // Initialize default settings and admin user
     this.initializeDefaultSettings();
+    this.initializeDefaultUser();
   }
 
   private async initializeDefaultSettings() {
@@ -46,6 +48,18 @@ export class MemStorage implements IStorage {
     }
   }
 
+  private async initializeDefaultUser() {
+    // Create a default admin user for development
+    const defaultUser: InsertUser = {
+      username: "admin",
+      password: "admin123"
+    };
+    
+    const id = randomUUID();
+    const user: User = { ...defaultUser, id };
+    this.users.set(id, user);
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -61,6 +75,17 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async updatePassword(username: string, newPassword: string): Promise<boolean> {
+    const user = await this.getUserByUsername(username);
+    if (!user) {
+      return false;
+    }
+    
+    const updatedUser = { ...user, password: newPassword };
+    this.users.set(user.id, updatedUser);
+    return true;
   }
 
   async getMediaItems(): Promise<MediaItem[]> {

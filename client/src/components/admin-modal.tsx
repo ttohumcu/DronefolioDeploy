@@ -38,6 +38,12 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     personalUrl: ""
   });
 
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
   const { data: settings } = useQuery({
     queryKey: ["/api/settings"],
     enabled: isOpen
@@ -107,6 +113,30 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     }
   });
 
+  const updatePasswordMutation = useMutation({
+    mutationFn: async ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) => {
+      await apiRequest("PUT", "/api/user/password", { currentPassword, newPassword });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Password updated successfully!"
+      });
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update password.",
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.location || !formData.url) {
@@ -122,6 +152,41 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
 
   const handleUpdateSetting = (key: string, value: string) => {
     updateSettingMutation.mutate({ key, value });
+  };
+
+  const handlePasswordUpdate = () => {
+    // Validation
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Please fill in all password fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      toast({
+        title: "Error", 
+        description: "New password must be at least 8 characters long.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "New password and confirmation do not match.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    updatePasswordMutation.mutate({
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword
+    });
   };
 
   const handleUploadAndUpdateSetting = async (settingKey: string, file: File | null) => {
@@ -554,6 +619,8 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                 <Label className="block text-sm font-medium text-foreground mb-2">Current Password</Label>
                 <Input
                   type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                   className="w-full bg-input border border-border text-foreground"
                   data-testid="input-current-password"
                 />
@@ -563,6 +630,8 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                 <Label className="block text-sm font-medium text-foreground mb-2">New Password (min. 8 characters)</Label>
                 <Input
                   type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                   className="w-full bg-input border border-border text-foreground"
                   data-testid="input-new-password"
                 />
@@ -572,16 +641,20 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                 <Label className="block text-sm font-medium text-foreground mb-2">Confirm New Password</Label>
                 <Input
                   type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                   className="w-full bg-input border border-border text-foreground"
                   data-testid="input-confirm-password"
                 />
               </div>
 
               <Button 
+                onClick={handlePasswordUpdate}
+                disabled={updatePasswordMutation.isPending}
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
                 data-testid="button-update-password"
               >
-                Update Password
+                {updatePasswordMutation.isPending ? "Updating..." : "Update Password"}
               </Button>
             </TabsContent>
           </div>
