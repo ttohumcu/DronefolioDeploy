@@ -22,7 +22,8 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     title: "",
     location: "",
     mediaType: MediaType.PHOTO_4K,
-    url: ""
+    url: "",
+    thumbnailUrl: ""
   });
 
   // Load editing item data when editingItem changes
@@ -32,14 +33,16 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
         title: editingItem.title,
         location: editingItem.location,
         mediaType: editingItem.mediaType,
-        url: editingItem.url
+        url: editingItem.url,
+        thumbnailUrl: editingItem.thumbnailUrl || ""
       });
     } else {
       setFormData({
         title: "",
         location: "",
         mediaType: MediaType.PHOTO_4K,
-        url: ""
+        url: "",
+        thumbnailUrl: ""
       });
     }
   }, [editingItem]);
@@ -105,7 +108,8 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
         title: "",
         location: "",
         mediaType: MediaType.PHOTO_4K,
-        url: ""
+        url: "",
+        thumbnailUrl: ""
       });
       onClose();
     },
@@ -344,7 +348,8 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     onSuccess: (data) => {
       setFormData(prev => ({
         ...prev,
-        url: data.url
+        url: data.url,
+        thumbnailUrl: data.thumbnailUrl || ""
       }));
       toast({
         title: "Upload Complete",

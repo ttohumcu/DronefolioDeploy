@@ -1,6 +1,7 @@
 import { Storage, File } from "@google-cloud/storage";
 import { Response } from "express";
 import { randomUUID } from "crypto";
+import sharp from "sharp";
 
 const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
 
@@ -97,6 +98,57 @@ export class ObjectStorageService {
 
     // Return the public URL
     return `/public-objects/${uniqueFileName}`;
+  }
+
+  // Upload image with thumbnail generation for progressive loading
+  async uploadImageWithThumbnail(file: Buffer, fileName: string, mimeType: string): Promise<{fullUrl: string, thumbnailUrl: string}> {
+    const publicPaths = this.getPublicObjectSearchPaths();
+    if (publicPaths.length === 0) {
+      throw new Error("No public object search paths configured");
+    }
+
+    // Use the first public path for uploads
+    const publicPath = publicPaths[0];
+    const { bucketName, objectName: basePath } = parseObjectPath(publicPath);
+    
+    // Generate unique filename
+    const timestamp = Date.now();
+    const uuid = randomUUID();
+    const extension = fileName.split('.').pop() || 'jpg';
+    const baseFileName = `${timestamp}-${uuid}`;
+    const fullFileName = `${baseFileName}.${extension}`;
+    const thumbnailFileName = `${baseFileName}_thumb.${extension}`;
+
+    const bucket = objectStorageClient.bucket(bucketName);
+
+    // Upload original full-resolution image
+    const fullFileObj = bucket.file(`${basePath}/${fullFileName}`);
+    await fullFileObj.save(file, {
+      metadata: {
+        contentType: mimeType,
+      },
+    });
+
+    // Generate and upload thumbnail (300px width, maintain aspect ratio)
+    const thumbnailBuffer = await sharp(file)
+      .resize(300, null, { 
+        withoutEnlargement: true,
+        fit: 'inside'
+      })
+      .jpeg({ quality: 80 })
+      .toBuffer();
+
+    const thumbnailFileObj = bucket.file(`${basePath}/${thumbnailFileName}`);
+    await thumbnailFileObj.save(thumbnailBuffer, {
+      metadata: {
+        contentType: 'image/jpeg',
+      },
+    });
+
+    return {
+      fullUrl: `/public-objects/${fullFileName}`,
+      thumbnailUrl: `/public-objects/${thumbnailFileName}`
+    };
   }
 
   // Search for a public object from the search paths.

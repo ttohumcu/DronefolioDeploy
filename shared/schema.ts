@@ -15,6 +15,7 @@ export const mediaItems = pgTable("media_items", {
   location: text("location").notNull(),
   mediaType: text("media_type").notNull(), // '4K Photo', '180° Panorama', '360° Panorama', 'Video'
   url: text("url").notNull(), // For photos: image URL, for videos: YouTube URL
+  thumbnailUrl: text("thumbnail_url"), // Low-resolution thumbnail for faster loading
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -34,6 +35,7 @@ export const insertMediaItemSchema = createInsertSchema(mediaItems).pick({
   location: true,
   mediaType: true,
   url: true,
+  thumbnailUrl: true,
 });
 
 export const insertSettingSchema = createInsertSchema(settings).pick({

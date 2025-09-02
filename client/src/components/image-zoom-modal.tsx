@@ -7,15 +7,18 @@ interface ImageZoomModalProps {
   isOpen: boolean;
   onClose: () => void;
   imageUrl: string;
+  thumbnailUrl?: string;
   title: string;
 }
 
-export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomModalProps) {
+export function ImageZoomModal({ isOpen, onClose, imageUrl, thumbnailUrl, title }: ImageZoomModalProps) {
   const [zoom, setZoom] = useState(1);
   const [baseZoom, setBaseZoom] = useState(1); // The "fit to screen" zoom level
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, posX: 0, posY: 0 });
+  const [isFullImageLoaded, setIsFullImageLoaded] = useState(false);
+  const [showFullImage, setShowFullImage] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
   // Calculate fit-to-screen zoom when image loads
@@ -45,8 +48,10 @@ export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomMo
       setZoom(1);
       setBaseZoom(1);
       setPosition({ x: 0, y: 0 });
+      setIsFullImageLoaded(false);
+      setShowFullImage(!thumbnailUrl); // If no thumbnail, show full image immediately
     }
-  }, [isOpen]);
+  }, [isOpen, thumbnailUrl]);
 
   const handleZoomIn = () => {
     setZoom(prev => Math.min(prev * 1.5, baseZoom * 5));
@@ -145,12 +150,29 @@ export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomMo
         </div>
 
         {/* Image container */}
-        <div className="w-full h-full flex items-center justify-center overflow-hidden">
+        <div className="w-full h-full flex items-center justify-center overflow-hidden relative">
+          {/* Thumbnail placeholder while full image loads */}
+          {thumbnailUrl && !showFullImage && (
+            <img
+              src={thumbnailUrl}
+              alt={title}
+              className="max-w-none select-none blur-sm scale-105 transition-all duration-500"
+              style={{
+                transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
+                transformOrigin: 'center center'
+              }}
+              draggable={false}
+            />
+          )}
+          
+          {/* Full resolution image */}
           <img
             ref={imageRef}
             src={imageUrl}
             alt={title}
-            className="max-w-none cursor-move select-none"
+            className={`max-w-none cursor-move select-none transition-opacity duration-500 ${
+              showFullImage ? 'opacity-100' : 'opacity-0 absolute'
+            }`}
             style={{
               transform: `scale(${zoom}) translate(${position.x / zoom}px, ${position.y / zoom}px)`,
               transformOrigin: 'center center',
@@ -163,10 +185,21 @@ export function ImageZoomModal({ isOpen, onClose, imageUrl, title }: ImageZoomMo
               setBaseZoom(fitZoom);
               setZoom(fitZoom);
               setPosition({ x: 0, y: 0 });
+              setIsFullImageLoaded(true);
+              setShowFullImage(true);
             }}
             draggable={false}
             data-testid="img-zoom-view"
           />
+          
+          {/* Loading indicator */}
+          {thumbnailUrl && !isFullImageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-black/50 rounded-lg p-4">
+                <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full"></div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Instructions */}

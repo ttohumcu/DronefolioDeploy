@@ -41,7 +41,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Image upload endpoint
+  // Image upload endpoint with thumbnail generation
   app.post("/api/upload-image", upload.single('file'), async (req, res) => {
     try {
       if (!req.file) {
@@ -49,13 +49,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const objectStorageService = new ObjectStorageService();
-      const publicUrl = await objectStorageService.uploadFile(
-        req.file.buffer,
-        req.file.originalname,
-        req.file.mimetype
-      );
-
-      res.json({ url: publicUrl });
+      
+      // Check if it's an image file for thumbnail generation
+      if (req.file.mimetype.startsWith('image/')) {
+        const { fullUrl, thumbnailUrl } = await objectStorageService.uploadImageWithThumbnail(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+        res.json({ url: fullUrl, thumbnailUrl });
+      } else {
+        // For non-image files, use regular upload
+        const publicUrl = await objectStorageService.uploadFile(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+        res.json({ url: publicUrl });
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
       res.status(500).json({ error: "Failed to upload file" });

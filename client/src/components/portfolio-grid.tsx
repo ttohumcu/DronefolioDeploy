@@ -136,9 +136,10 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                         />
                       ) : (
                         <img 
-                          src={item.url}
+                          src={item.thumbnailUrl || item.url}
                           alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
                         />
                       )}
                       
@@ -211,6 +212,7 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
             setSelectedImage(null);
           }}
           imageUrl={selectedImage.url}
+          thumbnailUrl={selectedImage.thumbnailUrl}
           title={selectedImage.title}
         />
       )}
