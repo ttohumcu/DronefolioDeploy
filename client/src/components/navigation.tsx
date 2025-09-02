@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Plane } from "lucide-react";
 
 interface NavigationProps {
   onOpenAdmin: () => void;
@@ -12,14 +13,16 @@ export function Navigation({ onOpenAdmin, onLogout, showAdminButtons = false }: 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <i className="fas fa-helicopter text-primary text-xl"></i>
+            <div className="flex items-center space-x-3">
+              <Plane className="text-primary" size={28} />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground">DroneFolio</span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xl font-bold text-foreground">DroneFolio</span>
+                </div>
                 <span className="text-xs text-muted-foreground">Aerial Photography & Videography</span>
               </div>
+              <Plane className="text-primary" size={28} />
             </div>
-            <i className="fas fa-times text-muted-foreground cursor-pointer hover:text-foreground transition-colors"></i>
           </div>
           
           
