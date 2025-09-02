@@ -11,7 +11,8 @@ import { ObjectStorageService } from "./objectStorage";
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit
+    fileSize: 500 * 1024 * 1024, // 500MB limit for large drone photos
+    fieldSize: 500 * 1024 * 1024, // 500MB field limit
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
