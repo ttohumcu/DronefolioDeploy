@@ -38,9 +38,9 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
         />
       </div>
       
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8">
-        {/* Title Section - Centered */}
-        <div className="text-center max-w-2xl mx-auto mb-6">
+      {/* Title Section - Centered with padding */}
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 mb-6">
+        <div className="text-center max-w-2xl mx-auto">
           {!hasPortfolioItems ? (
             <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border">
               <h2 className="text-2xl font-bold text-foreground mb-2">
@@ -58,10 +58,12 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
             </div>
           )}
         </div>
-        
-        {/* Filter Controls and Search Bar - Full Width */}
-        {mediaItems.length > 0 ? (
-          <div className="flex items-center justify-between w-full max-w-full">
+      </div>
+
+      {/* Filter Controls and Search Bar - Full Width Edge to Edge */}
+      {mediaItems.length > 0 ? (
+        <div className="relative z-10 w-full">
+          <div className="flex items-center justify-between w-full px-4 sm:px-6 lg:px-8">
             {/* Left side - Filter Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
               {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
@@ -112,7 +114,9 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
               </Select>
             </div>
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="relative z-10 px-4 sm:px-6 lg:px-8">
           <div className="relative max-w-md mx-auto">
             <Input
               type="text"
@@ -124,8 +128,8 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
             />
             <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
