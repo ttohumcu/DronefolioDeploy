@@ -25,6 +25,8 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
   });
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [settingsData, setSettingsData] = useState({
     heroImageUrl: "",
@@ -168,6 +170,76 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     analyzePhotoMutation.mutate(formData.url);
   };
 
+  const uploadFileMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setFormData(prev => ({
+        ...prev,
+        url: data.url
+      }));
+      toast({
+        title: "Upload Complete",
+        description: "Your image has been uploaded successfully!"
+      });
+      setSelectedFile(null);
+    },
+    onError: (error) => {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload Failed",
+        description: "Could not upload the image. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please select an image file (JPG, PNG, WebP, etc.)",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "File Too Large", 
+          description: "Please select an image smaller than 10MB",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      setSelectedFile(file);
+    }
+  };
+
+  const handleFileUpload = () => {
+    if (selectedFile) {
+      uploadFileMutation.mutate(selectedFile);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="modal-backdrop max-w-2xl max-h-[90vh] overflow-hidden bg-card border border-border">
@@ -229,16 +301,68 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
 
                 <div>
                   <Label className="block text-sm font-medium text-foreground mb-2">
-                    {formData.mediaType === MediaType.VIDEO ? "YouTube URL" : "Image URL"}
+                    {formData.mediaType === MediaType.VIDEO ? "YouTube URL" : "Image"}
                   </Label>
-                  <Input
-                    type="url"
-                    value={formData.url}
-                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                    placeholder={formData.mediaType === MediaType.VIDEO ? "https://youtube.com/watch?v=..." : "https://images.unsplash.com/..."}
-                    className="w-full bg-input border border-border text-foreground"
-                    data-testid="input-url"
-                  />
+                  
+                  {formData.mediaType === MediaType.VIDEO ? (
+                    <Input
+                      type="url"
+                      value={formData.url}
+                      onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                      placeholder="https://youtube.com/watch?v=..."
+                      className="w-full bg-input border border-border text-foreground"
+                      data-testid="input-url"
+                    />
+                  ) : (
+                    <div className="space-y-4">
+                      {/* File Upload Option */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium">Upload from Device</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="flex-1 text-sm file:mr-2 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer"
+                            data-testid="input-file"
+                          />
+                          {selectedFile && (
+                            <Button
+                              type="button"
+                              onClick={handleFileUpload}
+                              disabled={uploadFileMutation.isPending}
+                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white"
+                              data-testid="button-upload-file"
+                            >
+                              {uploadFileMutation.isPending ? "Uploading..." : "Upload"}
+                            </Button>
+                          )}
+                        </div>
+                        {selectedFile && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                          </p>
+                        )}
+                      </div>
+                      
+                      {/* URL Option */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium">Or Enter URL</span>
+                        </div>
+                        <Input
+                          type="url"
+                          value={formData.url}
+                          onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                          placeholder="https://images.unsplash.com/..."
+                          className="w-full bg-input border border-border text-foreground"
+                          data-testid="input-url"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {formData.mediaType !== MediaType.VIDEO && (
