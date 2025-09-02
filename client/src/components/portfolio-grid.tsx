@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { ImageZoomModal } from "@/components/image-zoom-modal";
 
 interface PortfolioGridProps {
   onOpenViewer: (item: MediaItem) => void;
@@ -13,6 +14,8 @@ export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All Locations");
+  const [zoomModalOpen, setZoomModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<MediaItem | null>(null);
 
   const { data: mediaItems = [], isLoading } = useQuery({
     queryKey: ["/api/media"],
@@ -132,7 +135,14 @@ export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
                   <div 
                     key={item.id}
                     className="media-card group cursor-pointer"
-                    onClick={() => onOpenViewer(item)}
+                    onClick={() => {
+                      if (item.mediaType === MediaType.VIDEO) {
+                        onOpenViewer(item);
+                      } else {
+                        setSelectedImage(item);
+                        setZoomModalOpen(true);
+                      }
+                    }}
                     data-testid={`card-media-${item.id}`}
                   >
                     <div className="relative aspect-video rounded-xl overflow-hidden bg-card">
@@ -186,6 +196,19 @@ export function PortfolioGrid({ onOpenViewer }: PortfolioGridProps) {
           </div>
         )}
       </div>
+
+      {/* Image Zoom Modal */}
+      {selectedImage && (
+        <ImageZoomModal
+          isOpen={zoomModalOpen}
+          onClose={() => {
+            setZoomModalOpen(false);
+            setSelectedImage(null);
+          }}
+          imageUrl={selectedImage.url}
+          title={selectedImage.title}
+        />
+      )}
     </section>
   );
 }
