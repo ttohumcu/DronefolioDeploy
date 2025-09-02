@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -33,9 +34,13 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
 
     setIsLoading(true);
 
-    // Simple authentication - in a real app, this would be an API call
-    // For now, we'll use admin/admin123 as default credentials
-    if (credentials.username === "admin" && credentials.password === "admin123") {
+    try {
+      // Call backend login API
+      await apiRequest("POST", "/api/auth/login", {
+        username: credentials.username,
+        password: credentials.password
+      });
+      
       toast({
         title: "Success",
         description: "Login successful!"
@@ -43,10 +48,10 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
       onLoginSuccess();
       onClose();
       setCredentials({ username: "", password: "" });
-    } else {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Invalid username or password.",
+        description: error.message || "Invalid username or password.",
         variant: "destructive"
       });
     }
