@@ -21,7 +21,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
   const [formData, setFormData] = useState({
     title: "",
     location: "",
-    mediaType: MediaType.PHOTO_4K,
+    mediaType: "4K Photo" as MediaType,
     url: "",
     thumbnailUrl: ""
   });
@@ -40,7 +40,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
       setFormData({
         title: "",
         location: "",
-        mediaType: MediaType.PHOTO_4K,
+        mediaType: "4K Photo" as MediaType,
         url: "",
         thumbnailUrl: ""
       });
@@ -107,7 +107,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
       setFormData({
         title: "",
         location: "",
-        mediaType: MediaType.PHOTO_4K,
+        mediaType: "4K Photo" as MediaType,
         url: "",
         thumbnailUrl: ""
       });
@@ -458,13 +458,13 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
                   <Label className="block text-sm font-medium text-foreground mb-2">Media Type</Label>
                   <Select value={formData.mediaType} onValueChange={(value) => setFormData({ ...formData, mediaType: value as MediaType })}>
                     <SelectTrigger className="w-full bg-input border border-border text-foreground">
-                      <SelectValue />
+                      <SelectValue placeholder="Select media type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={MediaType.PHOTO_4K}>4K Photo</SelectItem>
-                      <SelectItem value={MediaType.PANORAMA_180}>180° Panorama</SelectItem>
-                      <SelectItem value={MediaType.PANORAMA_360}>360° Panorama</SelectItem>
-                      <SelectItem value={MediaType.VIDEO}>Video</SelectItem>
+                      <SelectItem value="4K Photo">4K Photo</SelectItem>
+                      <SelectItem value="180° Panorama">180° Panorama</SelectItem>
+                      <SelectItem value="360° Panorama">360° Panorama</SelectItem>
+                      <SelectItem value="Video">Video</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

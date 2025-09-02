@@ -97,7 +97,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="All Locations">All Locations</SelectItem>
-                  {locations.map((location) => (
+                  {locations.filter(location => location && location.trim() !== '').map((location) => (
                     <SelectItem key={location} value={location}>{location}</SelectItem>
                   ))}
                 </SelectContent>
