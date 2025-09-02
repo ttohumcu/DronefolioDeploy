@@ -128,6 +128,7 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
       return response;
     },
     onSuccess: (data) => {
+      console.log("AI Analysis success data:", data);
       setFormData(prev => ({
         ...prev,
         title: data.title || "",
@@ -351,17 +352,6 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                             className="flex-1 text-sm file:mr-2 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer cursor-pointer"
                             data-testid="input-file"
                           />
-                          {selectedFile && (
-                            <Button
-                              type="button"
-                              onClick={handleFileUpload}
-                              disabled={uploadFileMutation.isPending}
-                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white"
-                              data-testid="button-upload-file"
-                            >
-                              {uploadFileMutation.isPending ? "Uploading..." : "Upload"}
-                            </Button>
-                          )}
                         </div>
                         {selectedFile && (
                           <p className="text-sm text-muted-foreground mt-1">
