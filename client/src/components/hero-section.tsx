@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MediaType, type MediaItem } from "@shared/schema";
 
 interface HeroSectionProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  activeFilter: string;
+  setActiveFilter: (filter: string) => void;
+  locationFilter: string;
+  setLocationFilter: (filter: string) => void;
+  mediaItems: MediaItem[];
 }
 
-export function HeroSection({ searchQuery, onSearchChange }: HeroSectionProps) {
+export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActiveFilter, locationFilter, setLocationFilter, mediaItems }: HeroSectionProps) {
+  // Get unique locations for filter dropdown
+  const locations = Array.from(new Set(mediaItems.map((item: MediaItem) => item.location))).sort();
   const { data: settings } = useQuery({
     queryKey: ["/api/settings"],
   });
@@ -50,18 +60,72 @@ export function HeroSection({ searchQuery, onSearchChange }: HeroSectionProps) {
           </div>
         )}
         
-        {/* Search Bar */}
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="Search by Title or Location"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-foreground placeholder-muted-foreground text-base"
-            data-testid="input-search"
-          />
-          <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
-        </div>
+        {/* Filter Controls and Search Bar */}
+        {mediaItems.length > 0 ? (
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {/* Left side - Filter Buttons */}
+            <div className="flex items-center space-x-2">
+              {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
+                <Button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  size="sm"
+                  className={`text-xs ${
+                    activeFilter === filter
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-white/80 text-foreground hover:bg-white/90'
+                  }`}
+                  data-testid={`button-filter-${filter.toLowerCase().replace(/[°\s]/g, '')}`}
+                >
+                  {filter === MediaType.PHOTO_4K ? "Photo" :
+                   filter === MediaType.PANORAMA_180 ? "180°" :
+                   filter === MediaType.PANORAMA_360 ? "360°" :
+                   filter === MediaType.VIDEO ? "Videos" : filter}
+                </Button>
+              ))}
+            </div>
+            
+            {/* Center - Search Bar */}
+            <div className="relative flex-1 max-w-md">
+              <Input
+                type="text"
+                placeholder="Search by Title or Location"
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-foreground placeholder-muted-foreground text-base"
+                data-testid="input-search"
+              />
+              <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+            </div>
+            
+            {/* Right side - Location Filter */}
+            <div>
+              <Select value={locationFilter} onValueChange={setLocationFilter}>
+                <SelectTrigger className="w-40 bg-white/80 text-foreground rounded-xl border border-white/20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All Locations">All Locations</SelectItem>
+                  {locations.map((location) => (
+                    <SelectItem key={location} value={location}>{location}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ) : (
+          <div className="relative max-w-md mx-auto">
+            <Input
+              type="text"
+              placeholder="Search by Title or Location"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="w-full px-6 py-3 bg-white/90 backdrop-blur-sm border border-white/20 rounded-xl text-foreground placeholder-muted-foreground text-base"
+              data-testid="input-search"
+            />
+            <i className="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+          </div>
+        )}
       </div>
     </section>
   );

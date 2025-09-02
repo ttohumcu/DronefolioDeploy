@@ -54,15 +54,18 @@ export default function Portfolio() {
         onOpenAdmin={() => setAdminModalOpen(true)} 
         onLogout={() => setIsAuthenticated(false)}
         showAdminButtons={isAuthenticated}
+      />
+      
+      {/* Always show hero section */}
+      <HeroSection 
+        searchQuery={searchQuery} 
+        onSearchChange={setSearchQuery}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
         locationFilter={locationFilter}
         setLocationFilter={setLocationFilter}
         mediaItems={mediaItems}
       />
-      
-      {/* Always show hero section */}
-      <HeroSection searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       
       {/* Show portfolio grid only when there are media items */}
       {!showHero && (
