@@ -129,8 +129,7 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
       });
     },
     onError: (error: any) => {
-      console.log("Password update error:", error);
-      const errorMessage = error?.response?.data?.error || error?.message || "Failed to update password.";
+      const errorMessage = error?.message || "Failed to update password.";
       toast({
         title: "Error",
         description: errorMessage,

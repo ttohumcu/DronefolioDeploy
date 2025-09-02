@@ -34,8 +34,8 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     setIsLoading(true);
 
     // Simple authentication - in a real app, this would be an API call
-    // For now, we'll use admin/admin as default credentials
-    if (credentials.username === "admin" && credentials.password === "admin") {
+    // For now, we'll use admin/admin123 as default credentials
+    if (credentials.username === "admin" && credentials.password === "admin123") {
       toast({
         title: "Success",
         description: "Login successful!"
