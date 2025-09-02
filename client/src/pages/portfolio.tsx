@@ -13,6 +13,8 @@ export default function Portfolio() {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [locationFilter, setLocationFilter] = useState("All Locations");
   const [viewerState, setViewerState] = useState<{
     isOpen: boolean;
     mediaItem: MediaItem | null;
@@ -52,6 +54,11 @@ export default function Portfolio() {
         onOpenAdmin={() => setAdminModalOpen(true)} 
         onLogout={() => setIsAuthenticated(false)}
         showAdminButtons={isAuthenticated}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        locationFilter={locationFilter}
+        setLocationFilter={setLocationFilter}
+        mediaItems={mediaItems}
       />
       
       {/* Always show hero section */}
@@ -59,7 +66,13 @@ export default function Portfolio() {
       
       {/* Show portfolio grid only when there are media items */}
       {!showHero && (
-        <PortfolioGrid onOpenViewer={handleOpenViewer} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <PortfolioGrid 
+          onOpenViewer={handleOpenViewer} 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery}
+          activeFilter={activeFilter}
+          locationFilter={locationFilter}
+        />
       )}
 
       {/* Footer */}

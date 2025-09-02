@@ -1,20 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { MediaType, type MediaItem } from "@shared/schema";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { ImageZoomModal } from "@/components/image-zoom-modal";
 
 interface PortfolioGridProps {
   onOpenViewer: (item: MediaItem) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  activeFilter: string;
+  locationFilter: string;
 }
 
-export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery }: PortfolioGridProps) {
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [locationFilter, setLocationFilter] = useState("All Locations");
+export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activeFilter, locationFilter }: PortfolioGridProps) {
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<MediaItem | null>(null);
 
@@ -22,8 +19,6 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery }: Por
     queryKey: ["/api/media"],
   });
 
-  // Get unique locations for filter dropdown
-  const locations = Array.from(new Set(mediaItems.map((item: MediaItem) => item.location))).sort();
 
   // Filter media items
   const filteredItems = mediaItems.filter((item: MediaItem) => {
@@ -67,41 +62,6 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery }: Por
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        
-        {/* Filter Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
-            <Button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`filter-btn px-6 py-3 rounded-xl font-medium text-sm ${
-                activeFilter === filter
-                  ? 'active bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-              data-testid={`button-filter-${filter.toLowerCase().replace(/[°\s]/g, '')}`}
-            >
-              {filter === MediaType.PHOTO_4K ? "Photo" :
-               filter === MediaType.PANORAMA_180 ? "180°" :
-               filter === MediaType.PANORAMA_360 ? "360°" :
-               filter === MediaType.VIDEO ? "Videos" : filter}
-            </Button>
-          ))}
-          
-          <div className="ml-auto">
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
-              <SelectTrigger className="px-4 py-3 bg-secondary text-secondary-foreground rounded-xl border border-border">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All Locations">All Locations</SelectItem>
-                {locations.map((location) => (
-                  <SelectItem key={location} value={location}>{location}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
 
         {/* Media Grid */}
         <div className="space-y-16">
