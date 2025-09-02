@@ -34,8 +34,9 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
         <img 
           src={backgroundImage}
           alt="Aerial view of city with river and bridges" 
-          className="w-full h-full object-cover opacity-50"
+          className="w-full h-full object-cover"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-black/20"></div>
       </div>
       
       {/* Title Section - Centered */}
