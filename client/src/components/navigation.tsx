@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plane } from "lucide-react";
+import droneIcon from "@assets/generated_images/Modern_drone_icon_silhouette_e04e9b81.png";
 
 interface NavigationProps {
   onOpenAdmin: () => void;
@@ -14,14 +14,14 @@ export function Navigation({ onOpenAdmin, onLogout, showAdminButtons = false }: 
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-              <Plane className="text-primary" size={28} />
+              <img src={droneIcon} alt="Drone" className="w-7 h-7 filter invert" />
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
                   <span className="text-xl font-bold text-foreground">DroneFolio</span>
                 </div>
                 <span className="text-xs text-muted-foreground">Aerial Photography & Videography</span>
               </div>
-              <Plane className="text-primary" size={28} />
+              <img src={droneIcon} alt="Drone" className="w-7 h-7 filter invert" />
             </div>
           </div>
           
