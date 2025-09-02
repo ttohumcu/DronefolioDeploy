@@ -13,6 +13,7 @@ export default function Portfolio() {
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [locationFilter, setLocationFilter] = useState("All Locations");
@@ -76,6 +77,11 @@ export default function Portfolio() {
           setSearchQuery={setSearchQuery}
           activeFilter={activeFilter}
           locationFilter={locationFilter}
+          isAuthenticated={isAuthenticated}
+          onEditItem={(item) => {
+            setEditingItem(item);
+            setAdminModalOpen(true);
+          }}
         />
       )}
 
@@ -146,7 +152,11 @@ export default function Portfolio() {
 
       <AdminModal 
         isOpen={adminModalOpen} 
-        onClose={() => setAdminModalOpen(false)} 
+        onClose={() => {
+          setAdminModalOpen(false);
+          setEditingItem(null);
+        }}
+        editingItem={editingItem}
       />
 
       <FullscreenViewer

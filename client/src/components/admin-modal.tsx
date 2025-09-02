@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { MediaType } from "@shared/schema";
+import { MediaType, type MediaItem } from "@shared/schema";
 
 interface AdminModalProps {
   isOpen: boolean;
   onClose: () => void;
+  editingItem?: MediaItem | null;
 }
 
-export function AdminModal({ isOpen, onClose }: AdminModalProps) {
+export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
@@ -23,6 +24,25 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     mediaType: MediaType.PHOTO_4K,
     url: ""
   });
+
+  // Load editing item data when editingItem changes
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({
+        title: editingItem.title,
+        location: editingItem.location,
+        mediaType: editingItem.mediaType,
+        url: editingItem.url
+      });
+    } else {
+      setFormData({
+        title: "",
+        location: "",
+        mediaType: MediaType.PHOTO_4K,
+        url: ""
+      });
+    }
+  }, [editingItem]);
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -67,15 +87,19 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
     }
   });
 
-  const createMediaMutation = useMutation({
+  const saveMediaMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest("POST", "/api/media", data);
+      if (editingItem) {
+        await apiRequest("PUT", `/api/media/${editingItem.id}`, data);
+      } else {
+        await apiRequest("POST", "/api/media", data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/media"] });
       toast({
         title: "Success",
-        description: "Media item added to portfolio successfully!"
+        description: editingItem ? "Media item updated successfully!" : "Media item added to portfolio successfully!"
       });
       setFormData({
         title: "",
@@ -83,11 +107,12 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
         mediaType: MediaType.PHOTO_4K,
         url: ""
       });
+      onClose();
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to add media item to portfolio.",
+        description: editingItem ? "Failed to update media item." : "Failed to add media item to portfolio.",
         variant: "destructive"
       });
     }
@@ -148,7 +173,7 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
       });
       return;
     }
-    createMediaMutation.mutate(formData);
+    saveMediaMutation.mutate(formData);
   };
 
   const handleUpdateSetting = (key: string, value: string) => {
@@ -478,10 +503,10 @@ export function AdminModal({ isOpen, onClose }: AdminModalProps) {
                 <Button 
                   type="submit" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg py-4"
-                  disabled={createMediaMutation.isPending}
+                  disabled={saveMediaMutation.isPending}
                   data-testid="button-add-portfolio"
                 >
-                  {createMediaMutation.isPending ? "Adding..." : "Add to Portfolio"}
+                  {saveMediaMutation.isPending ? (editingItem ? "Updating..." : "Adding...") : (editingItem ? "Update Portfolio" : "Add to Portfolio")}
                 </Button>
               </form>
             </TabsContent>

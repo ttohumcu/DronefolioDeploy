@@ -1,7 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { MediaType, type MediaItem } from "@shared/schema";
 import { useState } from "react";
 import { ImageZoomModal } from "@/components/image-zoom-modal";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface PortfolioGridProps {
   onOpenViewer: (item: MediaItem) => void;
@@ -9,15 +14,53 @@ interface PortfolioGridProps {
   setSearchQuery: (query: string) => void;
   activeFilter: string;
   locationFilter: string;
+  isAuthenticated?: boolean;
+  onEditItem?: (item: MediaItem) => void;
 }
 
-export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activeFilter, locationFilter }: PortfolioGridProps) {
+export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activeFilter, locationFilter, isAuthenticated = false, onEditItem }: PortfolioGridProps) {
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<MediaItem | null>(null);
+  const { toast } = useToast();
 
   const { data: mediaItems = [], isLoading } = useQuery<MediaItem[]>({
     queryKey: ["/api/media"],
   });
+
+  const deleteMediaMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/media/${id}`, { method: "DELETE" });
+      if (!response.ok) throw new Error("Failed to delete");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/media"] });
+      toast({
+        title: "Media Deleted",
+        description: "The media item has been successfully deleted.",
+      });
+    },
+    onError: (error) => {
+      console.error("Delete error:", error);
+      toast({
+        title: "Delete Failed", 
+        description: "Could not delete the media item. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = (e: React.MouseEvent, id: string, title: string) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+      deleteMediaMutation.mutate(id);
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent, item: MediaItem) => {
+    e.stopPropagation();
+    onEditItem?.(item);
+  };
 
 
   // Filter media items
@@ -101,7 +144,30 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                       
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-4 right-4 flex items-center space-x-2">
+                        {isAuthenticated && (
+                          <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+                              onClick={(e) => handleEdit(e, item)}
+                              data-testid={`button-edit-${item.id}`}
+                            >
+                              <Pencil className="h-4 w-4 text-white" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="h-8 w-8 p-0 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm"
+                              onClick={(e) => handleDelete(e, item.id, item.title)}
+                              disabled={deleteMediaMutation.isPending}
+                              data-testid={`button-delete-${item.id}`}
+                            >
+                              <Trash2 className="h-4 w-4 text-white" />
+                            </Button>
+                          </div>
+                        )}
                         {item.mediaType === MediaType.VIDEO ? (
                           <i className="fas fa-play text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity"></i>
                         ) : item.mediaType.includes('360°') ? (

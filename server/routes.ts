@@ -115,6 +115,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update media item
+  app.put("/api/media/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const validatedData = insertMediaItemSchema.parse(req.body);
+      
+      // Get existing item first
+      const existingItem = await storage.getMediaItems();
+      const itemToUpdate = existingItem.find(item => item.id === id);
+      
+      if (!itemToUpdate) {
+        return res.status(404).json({ error: "Media item not found" });
+      }
+      
+      // Delete old item and create updated one
+      await storage.deleteMediaItem(id);
+      const updatedItem = await storage.createMediaItem({
+        ...validatedData
+      });
+      
+      res.json(updatedItem);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid data", details: error.errors });
+      }
+      console.error("Error updating media item:", error);
+      res.status(500).json({ error: "Failed to update media item" });
+    }
+  });
+
   // Delete media item
   app.delete("/api/media/:id", async (req, res) => {
     try {
