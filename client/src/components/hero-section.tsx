@@ -29,7 +29,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
   const hasPortfolioItems = mediaItems.length > 0;
 
   return (
-    <section className="hero-gradient pt-32 h-48 flex items-center justify-center relative overflow-hidden">
+    <section className="hero-gradient pt-48 h-48 flex items-center justify-center relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img 
           src={backgroundImage}
