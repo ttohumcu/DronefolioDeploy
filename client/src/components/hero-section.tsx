@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 export function HeroSection() {
-  const { data: heroImage } = useQuery({
-    queryKey: ["/api/settings/hero_image_url"],
+  const { data: settings } = useQuery({
+    queryKey: ["/api/settings"],
   });
 
-  const backgroundImage = heroImage?.value || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&h=1380';
+  // Find hero image URL from settings
+  const heroImageSetting = settings?.find((s: any) => s.key === 'hero_image_url');
+  const backgroundImage = heroImageSetting?.value || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&h=1380';
 
   return (
     <section className="hero-gradient pt-16 min-h-screen flex items-center justify-center relative overflow-hidden">
