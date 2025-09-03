@@ -94,7 +94,7 @@ export class YouTubeService {
   }
 
   // Get latest videos from a channel
-  async getLatestVideos(channelUrl: string, maxResults: number = 20): Promise<YouTubeVideo[]> {
+  async getLatestVideos(channelUrl: string, maxResults: number = 24): Promise<YouTubeVideo[]> {
     try {
       const channelIdentifier = this.extractChannelId(channelUrl);
       if (!channelIdentifier) {

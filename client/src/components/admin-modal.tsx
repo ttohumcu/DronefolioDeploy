@@ -695,7 +695,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
                   disabled={importVideosMutation.isPending || !settingsData.youtubeUrl}
                   data-testid="button-import-videos"
                 >
-                  {importVideosMutation.isPending ? "Importing..." : "Import Latest 20 YouTube Videos"}
+                  {importVideosMutation.isPending ? "Importing..." : "Import Latest 24 YouTube Videos"}
                 </Button>
               </div>
             </TabsContent>

@@ -433,7 +433,7 @@ Examples of WRONG location format (DO NOT DO THIS):
       }
 
       const youtubeService = new YouTubeService(process.env.YOUTUBE_API_KEY);
-      const videos = await youtubeService.getLatestVideos(channelUrl, 20);
+      const videos = await youtubeService.getLatestVideos(channelUrl, 24);
 
       // Import videos as media items
       let importedCount = 0;
