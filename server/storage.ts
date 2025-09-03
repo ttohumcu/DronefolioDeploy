@@ -113,6 +113,7 @@ export class MemStorage implements IStorage {
     const mediaItem: MediaItem = { 
       ...insertMediaItem, 
       id,
+      source: insertMediaItem.source || "manual",
       createdAt: new Date(),
       thumbnailUrl: insertMediaItem.thumbnailUrl || null
     };

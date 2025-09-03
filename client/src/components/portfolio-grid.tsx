@@ -71,9 +71,9 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
       (item.title || '').toLowerCase().includes(query) ||
       (item.location || '').toLowerCase().includes(query);
     
-    // Check if video is from YouTube
+    // Check if video is from YouTube (using source field)
     const isYouTubeVideo = item.mediaType === MediaType.VIDEO && 
-                          (item.url.includes('youtube.com') || item.url.includes('youtu.be'));
+                          (item as any).source === "youtube_import";
     
     // Handle special filters
     const matchesType = activeFilter === "All" || 
@@ -89,11 +89,11 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
   // Separate YouTube videos and regular videos from other media
   const youtubeVideos = filteredItems.filter(item => 
     item.mediaType === MediaType.VIDEO && 
-    (item.url.includes('youtube.com') || item.url.includes('youtu.be'))
+    (item as any).source === "youtube_import"
   );
   const regularVideos = filteredItems.filter(item => 
     item.mediaType === MediaType.VIDEO && 
-    !item.url.includes('youtube.com') && !item.url.includes('youtu.be')
+    (item as any).source !== "youtube_import"
   );
   const otherMedia = filteredItems.filter(item => item.mediaType !== MediaType.VIDEO);
 

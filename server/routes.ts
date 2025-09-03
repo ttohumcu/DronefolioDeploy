@@ -451,7 +451,8 @@ Examples of WRONG location format (DO NOT DO THIS):
               location: "", // Videos don't need location
               mediaType: MediaType.VIDEO,
               url: video.url,
-              thumbnailUrl: video.thumbnailUrl
+              thumbnailUrl: video.thumbnailUrl,
+              source: "youtube_import"
             });
             importedCount++;
           }
