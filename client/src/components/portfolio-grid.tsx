@@ -78,8 +78,12 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
     return matchesSearch && matchesType && matchesLocation;
   });
 
-  // Group items by type
-  const groupedItems = filteredItems.reduce((acc: Record<string, MediaItem[]>, item: MediaItem) => {
+  // Separate YouTube videos from other media
+  const youtubeVideos = filteredItems.filter(item => item.mediaType === MediaType.VIDEO);
+  const otherMedia = filteredItems.filter(item => item.mediaType !== MediaType.VIDEO);
+
+  // Group non-video items by type
+  const groupedItems = otherMedia.reduce((acc: Record<string, MediaItem[]>, item: MediaItem) => {
     if (!acc[item.mediaType]) {
       acc[item.mediaType] = [];
     }
@@ -106,7 +110,74 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
 
-        {/* Media Grid */}
+        {/* YouTube Videos Section */}
+        {youtubeVideos.length > 0 && (
+          <div className="mb-20">
+            <h2 className="text-4xl font-bold text-foreground mb-12 text-center">Latest YouTube Videos</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {youtubeVideos.map((item) => (
+                <div 
+                  key={item.id}
+                  className="youtube-video-card group cursor-pointer"
+                  onClick={() => onOpenViewer(item)}
+                  data-testid={`card-youtube-${item.id}`}
+                >
+                  <div className="relative aspect-video rounded-xl overflow-hidden bg-card shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <img 
+                      src={getYoutubeThumbnail(item.url)}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                    
+                    <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
+                      {isAuthenticated && (
+                        <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 backdrop-blur-sm relative z-20"
+                            onClick={(e) => handleEdit(e, item)}
+                            data-testid={`button-edit-${item.id}`}
+                          >
+                            <Pencil className="h-4 w-4 text-white" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="h-8 w-8 p-0 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm relative z-20"
+                            onClick={(e) => handleDelete(e, item.id, item.title)}
+                            disabled={deleteMediaMutation.isPending}
+                            data-testid={`button-delete-${item.id}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-white" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="absolute bottom-4 left-4 right-4 z-10">
+                      <h3 className="text-white font-semibold text-lg mb-1 leading-tight line-clamp-2">{item.title}</h3>
+                      <div className="flex items-center text-white/90 text-sm">
+                        <i className="fab fa-youtube text-red-500 mr-2"></i>
+                        <span>YouTube</span>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="bg-red-600 rounded-full p-4 group-hover:scale-110 transition-transform duration-300">
+                        <i className="fas fa-play text-white text-2xl"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Other Media Grid */}
         <div className="space-y-16">
           {Object.entries(groupedItems).map(([mediaType, items]) => (
             <div key={mediaType}>

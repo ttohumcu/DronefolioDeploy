@@ -6,6 +6,7 @@ import { z } from "zod";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
 import { ObjectStorageService } from "./objectStorage";
+import { YouTubeService } from "./youtubeService";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -415,6 +416,60 @@ Examples of WRONG location format (DO NOT DO THIS):
     } catch (error) {
       console.error("Error analyzing photo with AI:", error);
       res.status(500).json({ error: "Failed to analyze photo" });
+    }
+  });
+
+  // YouTube video import endpoint
+  app.post("/api/youtube/import", async (req, res) => {
+    try {
+      const { channelUrl } = req.body;
+      
+      if (!channelUrl) {
+        return res.status(400).json({ error: "Channel URL is required" });
+      }
+
+      if (!process.env.YOUTUBE_API_KEY) {
+        return res.status(500).json({ error: "YouTube API key not configured" });
+      }
+
+      const youtubeService = new YouTubeService(process.env.YOUTUBE_API_KEY);
+      const videos = await youtubeService.getLatestVideos(channelUrl, 20);
+
+      // Import videos as media items
+      let importedCount = 0;
+      for (const video of videos) {
+        try {
+          // Check if video already exists to avoid duplicates
+          const existingItems = await storage.getMediaItems();
+          const existingVideo = existingItems.find(item => 
+            item.mediaType === MediaType.VIDEO && item.url === video.url
+          );
+
+          if (!existingVideo) {
+            await storage.createMediaItem({
+              title: video.title,
+              location: "", // Videos don't need location
+              mediaType: MediaType.VIDEO,
+              url: video.url,
+              thumbnailUrl: video.thumbnailUrl
+            });
+            importedCount++;
+          }
+        } catch (itemError) {
+          console.error(`Error importing video ${video.id}:`, itemError);
+          // Continue with other videos even if one fails
+        }
+      }
+
+      res.json({ 
+        message: `Successfully imported ${importedCount} videos`,
+        count: importedCount,
+        total: videos.length
+      });
+
+    } catch (error) {
+      console.error("Error importing YouTube videos:", error);
+      res.status(500).json({ error: "Failed to import YouTube videos" });
     }
   });
 

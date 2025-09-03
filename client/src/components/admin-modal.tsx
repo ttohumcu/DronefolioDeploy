@@ -227,6 +227,38 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     });
   };
 
+  const importVideosMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/youtube/import", { channelUrl: settingsData.youtubeUrl });
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/media"] });
+      toast({
+        title: "Success",
+        description: `Successfully imported ${data.count} videos from your YouTube channel!`
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to import YouTube videos. Please check your channel URL and try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleImportYouTubeVideos = () => {
+    if (!settingsData.youtubeUrl) {
+      toast({
+        title: "Error",
+        description: "Please set your YouTube channel URL first",
+        variant: "destructive"
+      });
+      return;
+    }
+    importVideosMutation.mutate();
+  };
+
   const handleUploadAndUpdateSetting = async (settingKey: string, file: File | null) => {
     if (!file) {
       toast({
@@ -643,18 +675,29 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
                 />
               </div>
 
-              <Button 
-                onClick={() => {
-                  handleUpdateSetting('twitter_url', settingsData.twitterUrl);
-                  handleUpdateSetting('youtube_url', settingsData.youtubeUrl);
-                  handleUpdateSetting('personal_url', settingsData.personalUrl);
-                }}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                disabled={updateSettingMutation.isPending}
-                data-testid="button-save-socials"
-              >
-                Save Social Links
-              </Button>
+              <div className="space-y-4">
+                <Button 
+                  onClick={() => {
+                    handleUpdateSetting('twitter_url', settingsData.twitterUrl);
+                    handleUpdateSetting('youtube_url', settingsData.youtubeUrl);
+                    handleUpdateSetting('personal_url', settingsData.personalUrl);
+                  }}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                  disabled={updateSettingMutation.isPending}
+                  data-testid="button-save-socials"
+                >
+                  Save Social Links
+                </Button>
+                
+                <Button 
+                  onClick={handleImportYouTubeVideos}
+                  className="w-full bg-red-600 text-white hover:bg-red-700 font-semibold"
+                  disabled={importVideosMutation.isPending || !settingsData.youtubeUrl}
+                  data-testid="button-import-videos"
+                >
+                  {importVideosMutation.isPending ? "Importing..." : "Import Latest 20 YouTube Videos"}
+                </Button>
+              </div>
             </TabsContent>
 
             <TabsContent value="security" className="space-y-6">
