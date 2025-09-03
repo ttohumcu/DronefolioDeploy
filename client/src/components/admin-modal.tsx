@@ -40,12 +40,25 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
       setFormData({
         title: "",
         location: "",
-        mediaType: "4K Photo" as MediaType,
+        mediaType: MediaType.PHOTO_4K,
         url: "",
         thumbnailUrl: ""
       });
     }
   }, [editingItem]);
+
+  // Clear form when modal opens for new items
+  useEffect(() => {
+    if (isOpen && !editingItem) {
+      setFormData({
+        title: "",
+        location: "",
+        mediaType: MediaType.PHOTO_4K,
+        url: "",
+        thumbnailUrl: ""
+      });
+    }
+  }, [isOpen, editingItem]);
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -107,7 +120,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
       setFormData({
         title: "",
         location: "",
-        mediaType: "4K Photo" as MediaType,
+        mediaType: MediaType.PHOTO_4K,
         url: "",
         thumbnailUrl: ""
       });
