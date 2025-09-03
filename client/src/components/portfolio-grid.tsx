@@ -214,7 +214,7 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
             setSelectedImage(null);
           }}
           imageUrl={selectedImage.url}
-          thumbnailUrl={selectedImage.thumbnailUrl}
+          thumbnailUrl={selectedImage.thumbnailUrl || undefined}
           title={selectedImage.title}
         />
       )}

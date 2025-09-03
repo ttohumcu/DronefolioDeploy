@@ -32,7 +32,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
       setFormData({
         title: editingItem.title,
         location: editingItem.location || "",
-        mediaType: editingItem.mediaType,
+        mediaType: editingItem.mediaType as MediaType,
         url: editingItem.url,
         thumbnailUrl: editingItem.thumbnailUrl || ""
       });
