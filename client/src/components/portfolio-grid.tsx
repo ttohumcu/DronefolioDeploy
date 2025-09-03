@@ -145,13 +145,13 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                       
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       
-                      <div className="absolute top-4 right-4 flex items-center space-x-2">
+                      <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
                         {isAuthenticated && (
                           <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Button
                               size="sm"
                               variant="secondary"
-                              className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 backdrop-blur-sm"
+                              className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 backdrop-blur-sm relative z-20"
                               onClick={(e) => handleEdit(e, item)}
                               data-testid={`button-edit-${item.id}`}
                             >
@@ -160,7 +160,7 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                             <Button
                               size="sm"
                               variant="destructive"
-                              className="h-8 w-8 p-0 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm"
+                              className="h-8 w-8 p-0 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm relative z-20"
                               onClick={(e) => handleDelete(e, item.id, item.title)}
                               disabled={deleteMediaMutation.isPending}
                               data-testid={`button-delete-${item.id}`}
@@ -186,7 +186,7 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                       </div>
                       
                       {item.mediaType === MediaType.VIDEO && (
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                           <i className="fas fa-play text-white text-4xl opacity-80 group-hover:opacity-100 transition-opacity"></i>
                         </div>
                       )}
