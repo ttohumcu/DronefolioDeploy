@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, X } from "lucide-react";
+import { LazyImage } from "./lazy-image";
 
 interface ImageZoomModalProps {
   isOpen: boolean;
