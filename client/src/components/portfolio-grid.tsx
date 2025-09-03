@@ -272,11 +272,6 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
                         </div>
                       </div>
                       
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="bg-red-600 rounded-full p-4 group-hover:scale-110 transition-transform duration-300">
-                          <i className="fas fa-play text-white text-2xl"></i>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 ))}
