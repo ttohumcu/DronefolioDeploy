@@ -71,22 +71,35 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
       (item.title || '').toLowerCase().includes(query) ||
       (item.location || '').toLowerCase().includes(query);
     
-    // Handle special YouTube filter
+    // Check if video is from YouTube
+    const isYouTubeVideo = item.mediaType === MediaType.VIDEO && 
+                          (item.url.includes('youtube.com') || item.url.includes('youtu.be'));
+    
+    // Handle special filters
     const matchesType = activeFilter === "All" || 
-                       (activeFilter === "YouTube" && item.mediaType === MediaType.VIDEO) ||
-                       (activeFilter !== "YouTube" && item.mediaType === activeFilter);
+                       (activeFilter === "YouTube" && isYouTubeVideo) ||
+                       (activeFilter === "Videos" && item.mediaType === MediaType.VIDEO && !isYouTubeVideo) ||
+                       (activeFilter !== "YouTube" && activeFilter !== "Videos" && item.mediaType === activeFilter);
     
     const matchesLocation = locationFilter === "All Locations" || item.location === locationFilter;
 
     return matchesSearch && matchesType && matchesLocation;
   });
 
-  // Separate YouTube videos from other media
-  const youtubeVideos = filteredItems.filter(item => item.mediaType === MediaType.VIDEO);
+  // Separate YouTube videos and regular videos from other media
+  const youtubeVideos = filteredItems.filter(item => 
+    item.mediaType === MediaType.VIDEO && 
+    (item.url.includes('youtube.com') || item.url.includes('youtu.be'))
+  );
+  const regularVideos = filteredItems.filter(item => 
+    item.mediaType === MediaType.VIDEO && 
+    !item.url.includes('youtube.com') && !item.url.includes('youtu.be')
+  );
   const otherMedia = filteredItems.filter(item => item.mediaType !== MediaType.VIDEO);
 
-  // Group non-video items by type
-  const groupedItems = otherMedia.reduce((acc: Record<string, MediaItem[]>, item: MediaItem) => {
+  // Group non-video items by type, and add regular videos back to the grouping
+  const nonYouTubeItems = [...otherMedia, ...regularVideos];
+  const groupedItems = nonYouTubeItems.reduce((acc: Record<string, MediaItem[]>, item: MediaItem) => {
     if (!acc[item.mediaType]) {
       acc[item.mediaType] = [];
     }
