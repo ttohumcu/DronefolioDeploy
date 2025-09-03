@@ -79,7 +79,8 @@ export function PortfolioGrid({ onOpenViewer, searchQuery, setSearchQuery, activ
     const matchesType = activeFilter === "All" || 
                        (activeFilter === "YouTube" && isYouTubeVideo) ||
                        (activeFilter === "Videos" && item.mediaType === MediaType.VIDEO && !isYouTubeVideo) ||
-                       (activeFilter !== "YouTube" && activeFilter !== "Videos" && item.mediaType === activeFilter);
+                       (activeFilter === MediaType.PHOTO_4K && item.mediaType === MediaType.PHOTO_4K) ||
+                       (activeFilter !== "YouTube" && activeFilter !== "Videos" && activeFilter !== MediaType.PHOTO_4K && item.mediaType === activeFilter);
     
     const matchesLocation = locationFilter === "All Locations" || item.location === locationFilter;
 
