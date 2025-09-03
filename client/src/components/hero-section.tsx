@@ -56,7 +56,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
           <div className="flex items-center justify-between w-full">
             {/* Left side - Filter Buttons */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, MediaType.VIDEO].map((filter) => (
+              {["All", MediaType.PHOTO_4K, MediaType.PANORAMA_180, MediaType.PANORAMA_360, "YouTube"].map((filter) => (
                 <Button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
@@ -71,7 +71,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
                   {filter === MediaType.PHOTO_4K ? "Photo" :
                    filter === MediaType.PANORAMA_180 ? "180°" :
                    filter === MediaType.PANORAMA_360 ? "360°" :
-                   filter === MediaType.VIDEO ? "Videos" : filter}
+                   filter === "YouTube" ? "YouTube" : filter}
                 </Button>
               ))}
             </div>
