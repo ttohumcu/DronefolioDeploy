@@ -68,7 +68,7 @@ export function HeroSection({ searchQuery, onSearchChange, activeFilter, setActi
                   }`}
                   data-testid={`button-filter-${filter.toLowerCase().replace(/[°\s]/g, '')}`}
                 >
-                  {filter === MediaType.PHOTO_4K ? "Photo" :
+                  {filter === MediaType.PHOTO_4K ? "Photos" :
                    filter === MediaType.PANORAMA_180 ? "180°" :
                    filter === MediaType.PANORAMA_360 ? "360°" :
                    filter === "Videos" ? "Videos" :
