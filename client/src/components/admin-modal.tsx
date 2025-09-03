@@ -180,6 +180,27 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     }
   });
 
+  const generateThumbnailsMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/thumbnails/generate");
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Success",
+        description: `Generated thumbnails for ${data.successful} images (${data.failed} failed)`
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/media"] });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Failed to generate thumbnails.";
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // For videos, location is not required
@@ -689,6 +710,15 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
               </div>
 
               <div className="space-y-4">
+                <Button 
+                  onClick={() => generateThumbnailsMutation.mutate()}
+                  className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold py-3 transition-all duration-200"
+                  disabled={generateThumbnailsMutation.isPending}
+                  data-testid="button-generate-thumbnails"
+                >
+                  {generateThumbnailsMutation.isPending ? "🔄 Generating Thumbnails..." : "📸 Generate Thumbnails for Existing Images"}
+                </Button>
+                
                 <Button 
                   onClick={() => {
                     handleUpdateSetting('twitter_url', settingsData.twitterUrl);

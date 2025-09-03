@@ -7,6 +7,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import multer from "multer";
 import { ObjectStorageService } from "./objectStorage";
 import { YouTubeService } from "./youtubeService";
+import { thumbnailService } from "./thumbnailService";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -25,6 +26,34 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Serve thumbnail files
+  app.get("/thumbnails/:filename", async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const path = require('path');
+      const fs = require('fs').promises;
+      
+      const filePath = path.join('thumbnails', filename);
+      
+      // Check if file exists
+      try {
+        await fs.access(filePath);
+      } catch {
+        return res.status(404).json({ error: "Thumbnail not found" });
+      }
+      
+      // Set proper headers for caching
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
+      res.setHeader('Content-Type', 'image/jpeg');
+      
+      // Send the file
+      res.sendFile(path.resolve(filePath));
+    } catch (error) {
+      console.error("Error serving thumbnail:", error);
+      res.status(500).json({ error: "Failed to serve thumbnail" });
+    }
+  });
   
   // This endpoint is used to serve public assets.
   app.get("/public-objects/:filePath(*)", async (req, res) => {
@@ -112,11 +141,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate thumbnails for existing media items
+  app.post("/api/thumbnails/generate", async (req, res) => {
+    try {
+      const mediaItems = await storage.getMediaItems();
+      const imageItems = mediaItems.filter(item => 
+        item.mediaType !== MediaType.VIDEO && 
+        item.url && 
+        !item.thumbnailUrl
+      );
+
+      console.log(`Generating thumbnails for ${imageItems.length} existing images...`);
+      
+      const results = [];
+      for (const item of imageItems) {
+        try {
+          // Generate thumbnail from the existing image URL
+          const thumbnail = await thumbnailService.generateThumbnailFromUrl(item.url, {
+            width: 400,
+            height: 300,
+            quality: 80,
+            format: 'jpeg'
+          });
+
+          // Update the media item with thumbnail URL
+          await storage.updateMediaItem(item.id, {
+            thumbnailUrl: thumbnail.thumbnailUrl
+          });
+
+          results.push({
+            id: item.id,
+            title: item.title,
+            thumbnailUrl: thumbnail.thumbnailUrl,
+            success: true
+          });
+
+          console.log(`Generated thumbnail for: ${item.title}`);
+        } catch (error) {
+          console.error(`Failed to generate thumbnail for ${item.title}:`, error);
+          results.push({
+            id: item.id,
+            title: item.title,
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      }
+
+      res.json({
+        message: `Processed ${imageItems.length} images`,
+        results,
+        successful: results.filter(r => r.success).length,
+        failed: results.filter(r => !r.success).length
+      });
+    } catch (error) {
+      console.error("Error generating thumbnails:", error);
+      res.status(500).json({ error: "Failed to generate thumbnails" });
+    }
+  });
+
   // Create new media item
   app.post("/api/media", async (req, res) => {
     try {
       const validatedData = insertMediaItemSchema.parse(req.body);
-      const item = await storage.createMediaItem(validatedData);
+      
+      // Auto-generate thumbnail for image uploads if URL is provided
+      let thumbnailUrl = validatedData.thumbnailUrl;
+      if (!thumbnailUrl && validatedData.mediaType !== MediaType.VIDEO && validatedData.url) {
+        try {
+          const isValidImage = await thumbnailService.validateImageUrl(validatedData.url);
+          if (isValidImage) {
+            const thumbnail = await thumbnailService.generateThumbnailFromUrl(validatedData.url, {
+              width: 400,
+              height: 300,
+              quality: 80,
+              format: 'jpeg'
+            });
+            thumbnailUrl = thumbnail.thumbnailUrl;
+            console.log(`Auto-generated thumbnail for new media item: ${validatedData.title}`);
+          }
+        } catch (error) {
+          console.error("Failed to auto-generate thumbnail:", error);
+          // Continue without thumbnail if generation fails
+        }
+      }
+
+      const itemData = { ...validatedData, thumbnailUrl };
+      const item = await storage.createMediaItem(itemData);
       res.json(item);
     } catch (error) {
       if (error instanceof z.ZodError) {

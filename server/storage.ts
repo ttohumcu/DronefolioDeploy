@@ -13,6 +13,7 @@ export interface IStorage {
   getMediaItemsByType(type: MediaType): Promise<MediaItem[]>;
   getMediaItemsByLocation(location: string): Promise<MediaItem[]>;
   createMediaItem(mediaItem: InsertMediaItem): Promise<MediaItem>;
+  updateMediaItem(id: string, updates: Partial<MediaItem>): Promise<MediaItem | null>;
   deleteMediaItem(id: string): Promise<boolean>;
   
   getSetting(key: string): Promise<Setting | undefined>;
@@ -121,6 +122,17 @@ export class MemStorage implements IStorage {
     return mediaItem;
   }
 
+  async updateMediaItem(id: string, updates: Partial<MediaItem>): Promise<MediaItem | null> {
+    const existing = this.mediaItems.get(id);
+    if (!existing) {
+      return null;
+    }
+    
+    const updated = { ...existing, ...updates };
+    this.mediaItems.set(id, updated);
+    return updated;
+  }
+
   async deleteMediaItem(id: string): Promise<boolean> {
     return this.mediaItems.delete(id);
   }
@@ -225,6 +237,15 @@ export class DatabaseStorage implements IStorage {
   async createMediaItem(insertMediaItem: InsertMediaItem): Promise<MediaItem> {
     const [mediaItem] = await db.insert(mediaItems).values(insertMediaItem).returning();
     return mediaItem;
+  }
+
+  async updateMediaItem(id: string, updates: Partial<MediaItem>): Promise<MediaItem | null> {
+    const [updated] = await db
+      .update(mediaItems)
+      .set(updates)
+      .where(eq(mediaItems.id, id))
+      .returning();
+    return updated || null;
   }
 
   async deleteMediaItem(id: string): Promise<boolean> {
