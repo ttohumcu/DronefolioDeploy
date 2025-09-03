@@ -493,10 +493,10 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
                       <SelectValue placeholder="Select media type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="4K Photo">4K Photo</SelectItem>
-                      <SelectItem value="180° Panorama">180° Panorama</SelectItem>
-                      <SelectItem value="360° Panorama">360° Panorama</SelectItem>
-                      <SelectItem value="Video">Video</SelectItem>
+                      <SelectItem value={MediaType.PHOTO_4K}>{MediaType.PHOTO_4K}</SelectItem>
+                      <SelectItem value={MediaType.PANORAMA_180}>{MediaType.PANORAMA_180}</SelectItem>
+                      <SelectItem value={MediaType.PANORAMA_360}>{MediaType.PANORAMA_360}</SelectItem>
+                      <SelectItem value={MediaType.VIDEO}>{MediaType.VIDEO}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
