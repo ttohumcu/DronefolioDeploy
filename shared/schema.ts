@@ -53,7 +53,7 @@ export type Setting = typeof settings.$inferSelect;
 export type InsertSetting = z.infer<typeof insertSettingSchema>;
 
 export enum MediaType {
-  PHOTO_4K = 'Photo',
+  PHOTO_4K = 'Photos',
   PANORAMA_180 = '180° Panorama', 
   PANORAMA_360 = '360° Panorama',
   VIDEO = 'Video',
