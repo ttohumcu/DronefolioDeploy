@@ -8,6 +8,8 @@ import multer from "multer";
 import { ObjectStorageService } from "./objectStorage";
 import { YouTubeService } from "./youtubeService";
 import { thumbnailService } from "./thumbnailService";
+import express from "express";
+import path from "path";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -27,33 +29,13 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Serve thumbnail files
-  app.get("/thumbnails/:filename", async (req, res) => {
-    try {
-      const filename = req.params.filename;
-      const path = require('path');
-      const fs = require('fs').promises;
-      
-      const filePath = path.join('thumbnails', filename);
-      
-      // Check if file exists
-      try {
-        await fs.access(filePath);
-      } catch {
-        return res.status(404).json({ error: "Thumbnail not found" });
-      }
-      
-      // Set proper headers for caching
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
+  // Serve thumbnail files using Express static middleware
+  app.use('/thumbnails', express.static(path.join(process.cwd(), 'thumbnails'), {
+    maxAge: '1d', // 1 day cache
+    setHeaders: (res) => {
       res.setHeader('Content-Type', 'image/jpeg');
-      
-      // Send the file
-      res.sendFile(path.resolve(filePath));
-    } catch (error) {
-      console.error("Error serving thumbnail:", error);
-      res.status(500).json({ error: "Failed to serve thumbnail" });
     }
-  });
+  }));
   
   // This endpoint is used to serve public assets.
   app.get("/public-objects/:filePath(*)", async (req, res) => {
