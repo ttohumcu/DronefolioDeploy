@@ -23,6 +23,7 @@ export function LazyImage({ src, thumbnailUrl, alt, className, onLoad, onError, 
   const imgRef = useRef<HTMLImageElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+
   useEffect(() => {
     const currentImg = imgRef.current;
     if (!currentImg) return;
@@ -93,7 +94,7 @@ export function LazyImage({ src, thumbnailUrl, alt, className, onLoad, onError, 
   }, [shouldLoadFullImage, imageLoaded, thumbnailUrl, src]);
 
   // Determine what to show
-  const showThumbnail = imageInView && thumbnailUrl && thumbnailLoaded && !imageLoaded;
+  const showThumbnail = imageInView && thumbnailUrl && !imageLoaded;
   const showFullImage = imageInView && thumbnailUrl && imageLoaded;
   const showDirectImage = imageInView && !thumbnailUrl;
 
@@ -118,7 +119,7 @@ export function LazyImage({ src, thumbnailUrl, alt, className, onLoad, onError, 
         <img
           src={thumbnailUrl}
           alt={alt}
-          className={`${className} filter blur-sm scale-105 transition-all duration-300`}
+          className={`${className} transition-all duration-300`}
           onLoad={handleThumbnailLoad}
           onError={handleError}
           onMouseEnter={triggerFullImageLoad} // Load full image on hover for better UX
