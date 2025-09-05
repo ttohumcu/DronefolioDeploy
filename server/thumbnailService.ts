@@ -40,7 +40,7 @@ export class ThumbnailService {
    */
   async generateThumbnailFromFile(
     inputPath: string, 
-    options: ThumbnailOptions = { width: 400, height: 300, quality: 80, format: 'jpeg' }
+    options: ThumbnailOptions = { width: 200, height: 200, quality: 60, format: 'jpeg' }
   ): Promise<ThumbnailResult> {
     const thumbnailId = randomUUID();
     const extension = options.format || 'jpeg';
@@ -53,7 +53,11 @@ export class ThumbnailService {
           fit: 'cover',
           position: 'center'
         })
-        .jpeg({ quality: options.quality || 80 })
+        .jpeg({ 
+          quality: options.quality || 60,
+          progressive: true,
+          mozjpeg: true 
+        })
         .toFile(thumbnailPath);
 
       return {
@@ -72,7 +76,7 @@ export class ThumbnailService {
    */
   async generateThumbnailFromUrl(
     imageUrl: string, 
-    options: ThumbnailOptions = { width: 400, height: 300, quality: 80, format: 'jpeg' }
+    options: ThumbnailOptions = { width: 200, height: 200, quality: 60, format: 'jpeg' }
   ): Promise<ThumbnailResult> {
     const tempId = randomUUID();
     const tempPath = path.join(this.thumbnailDir, `temp_${tempId}`);
@@ -113,7 +117,7 @@ export class ThumbnailService {
    */
   async generateThumbnailFromBuffer(
     buffer: Buffer, 
-    options: ThumbnailOptions = { width: 400, height: 300, quality: 80, format: 'jpeg' }
+    options: ThumbnailOptions = { width: 200, height: 200, quality: 60, format: 'jpeg' }
   ): Promise<ThumbnailResult> {
     const thumbnailId = randomUUID();
     const extension = options.format || 'jpeg';
@@ -126,7 +130,11 @@ export class ThumbnailService {
           fit: 'cover',
           position: 'center'
         })
-        .jpeg({ quality: options.quality || 80 })
+        .jpeg({ 
+          quality: options.quality || 60,
+          progressive: true,
+          mozjpeg: true 
+        })
         .toFile(thumbnailPath);
 
       return {
