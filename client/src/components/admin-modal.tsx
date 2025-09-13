@@ -420,9 +420,11 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
 
     try {
       const uploadResult = await uploadFileMutation.mutateAsync(selectedFile);
-      // Convert relative URL to full URL for AI analysis
-      const fullUrl = `${window.location.origin}${uploadResult.url}`;
-      analyzePhotoMutation.mutate(fullUrl);
+      // Use the URL as-is if it's already absolute, otherwise make it absolute
+      const imageUrl = uploadResult.url.startsWith('http') 
+        ? uploadResult.url 
+        : `${window.location.origin}${uploadResult.url}`;
+      analyzePhotoMutation.mutate(imageUrl);
     } catch (error) {
       toast({
         title: "Upload Failed",
