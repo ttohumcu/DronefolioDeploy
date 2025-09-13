@@ -201,7 +201,7 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // For videos, location is not required
     const isVideo = formData.mediaType === MediaType.VIDEO;
@@ -209,7 +209,15 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
     
     if (!formData.title) missingFields.push("title");
     if (!isVideo && !formData.location) missingFields.push("location");
-    if (!formData.url) missingFields.push("URL");
+    
+    // URL is only required if:
+    // 1. It's a video (needs YouTube URL)
+    // 2. OR no file is selected for upload (manual URL entry)
+    if (isVideo && !formData.url) {
+      missingFields.push("YouTube URL");
+    } else if (!isVideo && !formData.url && !selectedFile) {
+      missingFields.push("either select a file or enter a URL");
+    }
     
     if (missingFields.length > 0) {
       toast({
@@ -219,7 +227,28 @@ export function AdminModal({ isOpen, onClose, editingItem }: AdminModalProps) {
       });
       return;
     }
-    saveMediaMutation.mutate(formData);
+
+    try {
+      let finalFormData = { ...formData };
+
+      // If there's a selected file but no URL yet, upload first
+      if (selectedFile && !formData.url) {
+        const uploadResult = await uploadFileMutation.mutateAsync(selectedFile);
+        finalFormData = {
+          ...finalFormData,
+          url: uploadResult.url,
+          thumbnailUrl: uploadResult.thumbnailUrl || ""
+        };
+      }
+
+      saveMediaMutation.mutate(finalFormData);
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Could not upload the file. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleUpdateSetting = (key: string, value: string) => {
