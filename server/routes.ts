@@ -54,7 +54,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Image upload endpoint with thumbnail generation
-  app.post("/api/upload-image", upload.single('file'), async (req, res) => {
+  app.post("/api/upload-image", (req, res) => {
+    const uploadHandler = upload.single('file');
+    
+    uploadHandler(req, res, (err) => {
+      if (err) {
+        console.error("Multer error:", err);
+        return res.status(400).json({ 
+          error: "File upload error",
+          details: err.message 
+        });
+      }
+      
+      handleFileUpload(req, res);
+    });
+  });
+  
+  async function handleFileUpload(req: any, res: any) {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
@@ -83,7 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error uploading file:", error);
       res.status(500).json({ error: "Failed to upload file" });
     }
-  });
+  }
 
   // Get all media items
   app.get("/api/media", async (req, res) => {
